@@ -1,0 +1,103 @@
+.admin-topo {
+  background-color: var(--azul);
+  color: var(--branco);
+  padding: 14px 0;
+}
+
+.admin-topo-conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-topo strong {
+  font-size: 16px;
+}
+
+.admin-abas {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.admin-aba {
+  background-color: var(--cinza-fundo);
+  color: var(--texto);
+  padding: 8px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.admin-aba:hover {
+  transform: translateY(-2px);
+}
+
+.admin-aba-ativa {
+  background-color: var(--amarelo);
+  color: var(--azul-escuro);
+}
+
+.admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.admin-tabela th,
+.admin-tabela td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--cinza-borda);
+}
+
+.admin-tabela th {
+  background-color: var(--cinza-fundo);
+  color: var(--azul);
+}
+
+.admin-acoes {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-acao {
+  background-color: var(--cinza-fundo);
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  transition: background-color 0.2s;
+}
+
+.admin-acao:hover {
+  background-color: var(--amarelo);
+}
+
+.admin-vazio {
+  text-align: center;
+  color: var(--texto-claro);
+  padding: 20px;
+  font-size: 14px;
+}
+
+.admin-detalhe {
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-credenciamento {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.admin-tabela-area {
+  overflow-x: auto;
+}
