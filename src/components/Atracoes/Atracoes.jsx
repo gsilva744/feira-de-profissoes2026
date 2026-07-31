@@ -7,7 +7,7 @@ function Atracoes() {
   const atracoes = atracoesPorAndar[andarSelecionado];
 
   return (
-    <section className="secao" id="programacao">
+    <section className="secao secao-cinza" id="programacao">
       <div className="container">
         <h2 className="titulo-secao">Local de Atrações</h2>
 

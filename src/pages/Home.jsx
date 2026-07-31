@@ -43,11 +43,8 @@ function Home() {
       <Header onAbrirAreaRestrita={() => setModalAberto(true)} />
       <Hero />
       <Sobre />
-      <section className="secao secao-cinza">
-        <div className="container">
-          <Atracoes />
-        </div>
-      </section>
+      <Atracoes />
+
       <Localizacao />
       <Cursos />
 
