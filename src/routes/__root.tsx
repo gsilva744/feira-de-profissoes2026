@@ -80,16 +80,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "6ª Feira de Profissões 2026 | Instituto Social N. S. de Fátima" },
+      {
+        name: "description",
+        content:
+          "Hotsite da 6ª Feira de Profissões 2026 do Instituto Social Nossa Senhora de Fátima.",
+      },
+      { property: "og:title", content: "6ª Feira de Profissões 2026" },
+      {
+        property: "og:description",
+        content: "Descubra sua profissão do futuro na Feira de Profissões 2026.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+
       {
         rel: "stylesheet",
         href: appCss,
