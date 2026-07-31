@@ -1,14 +1,16 @@
+import { BookOpen, GraduationCap, Wrench } from "lucide-react";
 import curso1 from "../assets/curso-1.jpg";
 import curso2 from "../assets/curso-2.jpg";
 import curso3 from "../assets/curso-3.jpg";
 import curso4 from "../assets/curso-4.jpg";
 
-/* Categorias de cursos usadas nos botões da seção */
+/* Categorias de cursos usadas nos botões da seção (icone = componente Lucide) */
 export const categorias = [
-  { id: "Tecnicos", nome: "Técnicos", icone: "🧠" },
-  { id: "Livres", nome: "Livres", icone: "📘" },
-  { id: "Qualificacoes", nome: "Qualificações", icone: "🎓" },
+  { id: "Tecnicos", nome: "Técnicos", Icone: Wrench },
+  { id: "Livres", nome: "Livres", Icone: BookOpen },
+  { id: "Qualificacoes", nome: "Qualificações", Icone: GraduationCap },
 ];
+
 
 /* Lista de cursos simulando um banco de dados local */
 export const cursos = [
