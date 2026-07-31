@@ -16,27 +16,34 @@ function Cursos() {
         </p>
 
         <div className="cursos-categorias">
-          {categorias.map((categoria) => (
-            <div className="cursos-categoria" key={categoria.id}>
-              <span className="cursos-icone">{categoria.icone}</span>
+          {categorias.map((categoria) => {
+            const Icone = categoria.Icone;
+            const ativa = categoria.id === categoriaSelecionada;
+            const total = cursos.filter((curso) => curso.categoria === categoria.id).length;
+
+            return (
               <button
-                className={
-                  categoria.id === categoriaSelecionada
-                    ? "cursos-botao cursos-botao-ativo"
-                    : "cursos-botao"
-                }
+                key={categoria.id}
+                className={ativa ? "cursos-categoria cursos-categoria-ativa" : "cursos-categoria"}
                 onClick={() => setCategoriaSelecionada(categoria.id)}
               >
-                {categoria.nome}
+                <span className="cursos-icone">
+                  <Icone size={26} strokeWidth={2.2} />
+                </span>
+                <span className="cursos-categoria-nome">{categoria.nome}</span>
+                <span className="cursos-categoria-total">{total} cursos</span>
               </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="cursos-grade">
+        <div className="cursos-grade" key={categoriaSelecionada}>
           {cursosFiltrados.map((curso) => (
             <article className="cursos-item" key={curso.id}>
-              <img src={curso.imagem} alt={curso.nome} loading="lazy" />
+              <div className="cursos-item-imagem">
+                <img src={curso.imagem} alt={curso.nome} loading="lazy" />
+                <span className="cursos-item-tag">{categoriaSelecionada}</span>
+              </div>
               <div className="cursos-item-texto">
                 <h3>{curso.nome}</h3>
                 <p>{curso.descricao}</p>
