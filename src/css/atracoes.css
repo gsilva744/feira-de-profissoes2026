@@ -1,0 +1,87 @@
+.atracoes-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.atracoes-card {
+  background-color: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-radius: var(--raio);
+  padding: 22px;
+  box-shadow: var(--sombra);
+}
+
+.atracoes-card h3 {
+  color: var(--azul);
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.atracoes-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.atracoes-botao {
+  background: none;
+  color: var(--texto);
+  font-size: 15px;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.atracoes-botao:hover {
+  background-color: var(--cinza-fundo);
+  transform: translateX(4px);
+}
+
+.atracoes-botao-ativo {
+  color: var(--amarelo-escuro);
+  font-weight: bold;
+  background-color: #fff8e1;
+}
+
+.atracoes-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.atracoes-item {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  border-bottom: 1px dashed var(--cinza-borda);
+  padding-bottom: 8px;
+  animation: aparecer 0.3s ease;
+}
+
+.atracoes-horario {
+  color: var(--azul);
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 56px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .atracoes-cards {
+    grid-template-columns: 1fr;
+  }
+}
