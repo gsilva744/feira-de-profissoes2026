@@ -3,10 +3,13 @@ import { Link } from "@tanstack/react-router";
 import Modal from "../components/Modal/Modal";
 import Formulario from "../components/Formulario/Formulario";
 import QRCodeVisitante from "../components/QRCode/QRCodeVisitante";
+import LeitorQr from "../components/LeitorQr/LeitorQr";
+import Crachas from "../components/Crachas/Crachas";
 import { useVisitantes } from "../utils/VisitantesContext";
 import { cursos } from "../data/cursos";
 import "../css/formulario.css";
 import "../css/admin.css";
+
 
 function Admin() {
   const { visitantes, adicionarVisitante, atualizarVisitante, removerVisitante } = useVisitantes();
@@ -87,6 +90,19 @@ function Admin() {
           >
             Credenciamento
           </button>
+          <button
+            className={abaAtiva === "leitor" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("leitor")}
+          >
+            Leitor QR
+          </button>
+          <button
+            className={abaAtiva === "impressao" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("impressao")}
+          >
+            Impressão
+          </button>
+
         </div>
 
         {abaAtiva === "visitantes" && (
@@ -171,6 +187,25 @@ function Admin() {
             </div>
           </div>
         )}
+
+        {abaAtiva === "leitor" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Leitor de QR Code</h2>
+            </div>
+            <LeitorQr />
+          </div>
+        )}
+
+        {abaAtiva === "impressao" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Impressão de crachás</h2>
+            </div>
+            <Crachas />
+          </div>
+        )}
+
       </div>
 
       {visitanteQrCode && (
