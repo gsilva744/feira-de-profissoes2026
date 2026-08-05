@@ -174,6 +174,25 @@ function Admin() {
             </div>
           </div>
         )}
+
+        {abaAtiva === "leitor" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Leitor de QR Code</h2>
+            </div>
+            <LeitorQr />
+          </div>
+        )}
+
+        {abaAtiva === "impressao" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Impressão de crachás</h2>
+            </div>
+            <Crachas />
+          </div>
+        )}
+
       </div>
 
       {visitanteQrCode && (
