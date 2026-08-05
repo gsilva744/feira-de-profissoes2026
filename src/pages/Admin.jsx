@@ -3,10 +3,13 @@ import { Link } from "@tanstack/react-router";
 import Modal from "../components/Modal/Modal";
 import Formulario from "../components/Formulario/Formulario";
 import QRCodeVisitante from "../components/QRCode/QRCodeVisitante";
+import LeitorQr from "../components/LeitorQr/LeitorQr";
+import Crachas from "../components/Crachas/Crachas";
 import { useVisitantes } from "../utils/VisitantesContext";
 import { cursos } from "../data/cursos";
 import "../css/formulario.css";
 import "../css/admin.css";
+
 
 function Admin() {
   const { visitantes, adicionarVisitante, atualizarVisitante, removerVisitante } = useVisitantes();
