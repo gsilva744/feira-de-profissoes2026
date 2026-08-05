@@ -90,6 +90,19 @@ function Admin() {
           >
             Credenciamento
           </button>
+          <button
+            className={abaAtiva === "leitor" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("leitor")}
+          >
+            Leitor QR
+          </button>
+          <button
+            className={abaAtiva === "impressao" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("impressao")}
+          >
+            Impressão
+          </button>
+
         </div>
 
         {abaAtiva === "visitantes" && (
