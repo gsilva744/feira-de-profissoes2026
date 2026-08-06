@@ -114,7 +114,17 @@ function Admin() {
 
         </div>
 
+        {abaAtiva === "dashboard" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Visão geral das inscrições</h2>
+            </div>
+            <Dashboard />
+          </div>
+        )}
+
         {abaAtiva === "visitantes" && (
+
           <div className="admin-painel">
             <div className="admin-painel-topo">
               <h2>Lista de visitantes</h2>
