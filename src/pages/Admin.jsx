@@ -263,8 +263,15 @@ function Admin() {
               <strong>Curso:</strong> {visitanteDetalhe.cursoInteresse}
             </p>
             <p>
+              <strong>Gênero:</strong> {visitanteDetalhe.genero || "Não informado"}
+            </p>
+            <p>
+              <strong>Já estudou:</strong> {visitanteDetalhe.jaEstudou || "Não"}
+            </p>
+            <p>
               <strong>Código:</strong> {visitanteDetalhe.codigoQr}
             </p>
+
           </div>
         </Modal>
       )}
@@ -337,7 +344,34 @@ function Admin() {
                 ))}
               </select>
             </div>
+            <div className="formulario-campo">
+              <label htmlFor="editar-genero">Gênero</label>
+              <select
+                id="editar-genero"
+                name="genero"
+                value={visitanteEdicao.genero || ""}
+                onChange={alterarCampoEdicao}
+              >
+                <option value="">Selecione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Prefiro não informar</option>
+              </select>
+            </div>
+            <div className="formulario-campo">
+              <label htmlFor="editar-jaestudou">Já estudou no Instituto?</label>
+              <select
+                id="editar-jaestudou"
+                name="jaEstudou"
+                value={visitanteEdicao.jaEstudou || "Não"}
+                onChange={alterarCampoEdicao}
+              >
+                <option value="Não">Não</option>
+                <option value="Sim">Sim</option>
+              </select>
+            </div>
             <button type="submit" className="botao-azul formulario-enviar">
+
               Salvar alterações
             </button>
           </form>
