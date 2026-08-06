@@ -10,7 +10,10 @@ const camposVazios = {
   escola: "",
   serie: "",
   cursoInteresse: "",
+  genero: "",
+  jaEstudou: "Não",
 };
+
 
 function Formulario({ onCadastrar, mostrarQrCode = true }) {
   const [campos, setCampos] = useState(camposVazios);
@@ -89,7 +92,26 @@ function Formulario({ onCadastrar, mostrarQrCode = true }) {
         </select>
       </div>
 
+      <div className="formulario-campo">
+        <label htmlFor="genero">Gênero</label>
+        <select id="genero" name="genero" value={campos.genero} onChange={alterarCampo} required>
+          <option value="">Selecione</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Outro">Prefiro não informar</option>
+        </select>
+      </div>
+
+      <div className="formulario-campo">
+        <label htmlFor="jaEstudou">Já estudou no Instituto?</label>
+        <select id="jaEstudou" name="jaEstudou" value={campos.jaEstudou} onChange={alterarCampo}>
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+      </div>
+
       <button type="submit" className="botao-azul formulario-enviar">
+
         Confirmar Inscrição
       </button>
 
