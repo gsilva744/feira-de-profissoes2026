@@ -5,6 +5,8 @@ import Formulario from "../components/Formulario/Formulario";
 import QRCodeVisitante from "../components/QRCode/QRCodeVisitante";
 import LeitorQr from "../components/LeitorQr/LeitorQr";
 import Crachas from "../components/Crachas/Crachas";
+import Dashboard from "../components/Dashboard/Dashboard";
+
 import { useVisitantes } from "../utils/VisitantesContext";
 import { cursos } from "../data/cursos";
 import "../css/formulario.css";
@@ -13,7 +15,7 @@ import "../css/admin.css";
 
 function Admin() {
   const { visitantes, adicionarVisitante, atualizarVisitante, removerVisitante } = useVisitantes();
-  const [abaAtiva, setAbaAtiva] = useState("visitantes");
+  const [abaAtiva, setAbaAtiva] = useState("dashboard");
   const [busca, setBusca] = useState("");
   const [visitanteQrCode, setVisitanteQrCode] = useState(null);
   const [visitanteDetalhe, setVisitanteDetalhe] = useState(null);
@@ -79,11 +81,18 @@ function Admin() {
 
         <div className="admin-abas">
           <button
+            className={abaAtiva === "dashboard" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("dashboard")}
+          >
+            Dashboard
+          </button>
+          <button
             className={abaAtiva === "visitantes" ? "admin-aba admin-aba-ativa" : "admin-aba"}
             onClick={() => setAbaAtiva("visitantes")}
           >
             Visitantes
           </button>
+
           <button
             className={abaAtiva === "credenciamento" ? "admin-aba admin-aba-ativa" : "admin-aba"}
             onClick={() => setAbaAtiva("credenciamento")}
