@@ -24,7 +24,7 @@ export const cursos = [
   {
     id: 2,
     categoria: "Tecnicos",
-    nome: "Contabilidade",
+    nome: "Administração",
     descricao: "Rotinas contábeis, tributos e análise de documentos financeiros.",
     imagem: curso2,
   },
