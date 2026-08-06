@@ -5,6 +5,8 @@ import Formulario from "../components/Formulario/Formulario";
 import QRCodeVisitante from "../components/QRCode/QRCodeVisitante";
 import LeitorQr from "../components/LeitorQr/LeitorQr";
 import Crachas from "../components/Crachas/Crachas";
+import Dashboard from "../components/Dashboard/Dashboard";
+
 import { useVisitantes } from "../utils/VisitantesContext";
 import { cursos } from "../data/cursos";
 import "../css/formulario.css";
@@ -13,7 +15,7 @@ import "../css/admin.css";
 
 function Admin() {
   const { visitantes, adicionarVisitante, atualizarVisitante, removerVisitante } = useVisitantes();
-  const [abaAtiva, setAbaAtiva] = useState("visitantes");
+  const [abaAtiva, setAbaAtiva] = useState("dashboard");
   const [busca, setBusca] = useState("");
   const [visitanteQrCode, setVisitanteQrCode] = useState(null);
   const [visitanteDetalhe, setVisitanteDetalhe] = useState(null);
@@ -79,11 +81,18 @@ function Admin() {
 
         <div className="admin-abas">
           <button
+            className={abaAtiva === "dashboard" ? "admin-aba admin-aba-ativa" : "admin-aba"}
+            onClick={() => setAbaAtiva("dashboard")}
+          >
+            Dashboard
+          </button>
+          <button
             className={abaAtiva === "visitantes" ? "admin-aba admin-aba-ativa" : "admin-aba"}
             onClick={() => setAbaAtiva("visitantes")}
           >
             Visitantes
           </button>
+
           <button
             className={abaAtiva === "credenciamento" ? "admin-aba admin-aba-ativa" : "admin-aba"}
             onClick={() => setAbaAtiva("credenciamento")}
@@ -105,7 +114,17 @@ function Admin() {
 
         </div>
 
+        {abaAtiva === "dashboard" && (
+          <div className="admin-painel">
+            <div className="admin-painel-topo">
+              <h2>Visão geral das inscrições</h2>
+            </div>
+            <Dashboard />
+          </div>
+        )}
+
         {abaAtiva === "visitantes" && (
+
           <div className="admin-painel">
             <div className="admin-painel-topo">
               <h2>Lista de visitantes</h2>
@@ -244,8 +263,15 @@ function Admin() {
               <strong>Curso:</strong> {visitanteDetalhe.cursoInteresse}
             </p>
             <p>
+              <strong>Gênero:</strong> {visitanteDetalhe.genero || "Não informado"}
+            </p>
+            <p>
+              <strong>Já estudou:</strong> {visitanteDetalhe.jaEstudou || "Não"}
+            </p>
+            <p>
               <strong>Código:</strong> {visitanteDetalhe.codigoQr}
             </p>
+
           </div>
         </Modal>
       )}
@@ -318,7 +344,34 @@ function Admin() {
                 ))}
               </select>
             </div>
+            <div className="formulario-campo">
+              <label htmlFor="editar-genero">Gênero</label>
+              <select
+                id="editar-genero"
+                name="genero"
+                value={visitanteEdicao.genero || ""}
+                onChange={alterarCampoEdicao}
+              >
+                <option value="">Selecione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Prefiro não informar</option>
+              </select>
+            </div>
+            <div className="formulario-campo">
+              <label htmlFor="editar-jaestudou">Já estudou no Instituto?</label>
+              <select
+                id="editar-jaestudou"
+                name="jaEstudou"
+                value={visitanteEdicao.jaEstudou || "Não"}
+                onChange={alterarCampoEdicao}
+              >
+                <option value="Não">Não</option>
+                <option value="Sim">Sim</option>
+              </select>
+            </div>
             <button type="submit" className="botao-azul formulario-enviar">
+
               Salvar alterações
             </button>
           </form>
