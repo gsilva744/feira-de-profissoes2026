@@ -315,3 +315,15 @@
   font-weight: bold;
   color: var(--azul);
 }
+
+.leitor-setores-botoes button small {
+  display: block;
+  font-size: 10px;
+  font-weight: normal;
+  opacity: 0.75;
+}
+
+.leitor-video-area {
+  max-width: 420px;
+  margin: 0 auto;
+}
