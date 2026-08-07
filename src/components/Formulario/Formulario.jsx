@@ -1,118 +1,206 @@
 import { useState } from "react";
 import { cursos } from "../../data/cursos";
+import { canaisDivulgacao, generos, vinculos } from "../../data/setores";
 import QRCodeVisitante from "../QRCode/QRCodeVisitante";
 import "../../css/formulario.css";
 
 const camposVazios = {
   nome: "",
-  telefone: "",
   email: "",
-  escola: "",
-  serie: "",
-  cursoInteresse: "",
+  cpf: "",
+  telefone: "",
+  vinculo: "",
+  comoSoube: "",
   genero: "",
-  jaEstudou: "Não",
+  cursoInteresse: "",
 };
 
+/* Formata o CPF enquanto a pessoa digita: 000.000.000-00 */
+function formatarCpf(valor) {
+  const numeros = valor.replace(/\D/g, "").slice(0, 11);
+  return numeros
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d{1,2})$/, ".$1-$2");
+}
 
-function Formulario({ onCadastrar, mostrarQrCode = true }) {
+/* Formata o telefone: (00) 00000-0000 */
+function formatarTelefone(valor) {
+  const numeros = valor.replace(/\D/g, "").slice(0, 11);
+  if (numeros.length <= 10) {
+    return numeros.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3").replace(/[-\s()]*$/, "");
+  }
+  return numeros.replace(/^(\d{2})(\d{5})(\d{0,4})$/, "($1) $2-$3");
+}
+
+const nomesDeCursos = Array.from(new Set(cursos.map((curso) => curso.nome)));
+
+function Formulario({ onCadastrar, mostrarQrCode = true, titulo, descricao }) {
   const [campos, setCampos] = useState(camposVazios);
+  const [erro, setErro] = useState("");
   const [visitanteCadastrado, setVisitanteCadastrado] = useState(null);
 
   function alterarCampo(evento) {
     const { name, value } = evento.target;
-    setCampos((anterior) => ({ ...anterior, [name]: value }));
+    const tratado =
+      name === "cpf" ? formatarCpf(value) : name === "telefone" ? formatarTelefone(value) : value;
+    setCampos((anterior) => ({ ...anterior, [name]: tratado }));
   }
 
   function enviarFormulario(evento) {
     evento.preventDefault();
-    const novoVisitante = onCadastrar(campos);
+    const nome = campos.nome.trim();
+    if (nome.length < 3 || nome.length > 100) {
+      setErro("Informe o nome completo (3 a 100 caracteres).");
+      return;
+    }
+    if (campos.cpf.replace(/\D/g, "").length !== 11) {
+      setErro("Informe um CPF com 11 dígitos.");
+      return;
+    }
+    if (campos.telefone.replace(/\D/g, "").length < 10) {
+      setErro("Informe um telefone com DDD.");
+      return;
+    }
+
+    setErro("");
+    const novoVisitante = onCadastrar({
+      ...campos,
+      nome,
+      email: campos.email.trim().slice(0, 255),
+    });
     setVisitanteCadastrado(novoVisitante);
     setCampos(camposVazios);
   }
 
   return (
     <form className="formulario-card" onSubmit={enviarFormulario}>
-      <h3>Formulário de Inscrição</h3>
-      <p>Preencha seus dados para participar</p>
+      <h3>{titulo || "Formulário de Inscrição"}</h3>
+      <p>{descricao || "Preencha seus dados para participar da feira"}</p>
 
-      <div className="formulario-campo">
-        <label htmlFor="nome">Nome Completo</label>
-        <input id="nome" name="nome" value={campos.nome} onChange={alterarCampo} required />
+      <div className="formulario-grade">
+        <div className="formulario-campo formulario-campo-largo">
+          <label htmlFor="nome">Nome completo</label>
+          <input
+            id="nome"
+            name="nome"
+            maxLength={100}
+            value={campos.nome}
+            onChange={alterarCampo}
+            required
+          />
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            maxLength={255}
+            value={campos.email}
+            onChange={alterarCampo}
+            required
+          />
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="cpf">CPF</label>
+          <input
+            id="cpf"
+            name="cpf"
+            inputMode="numeric"
+            placeholder="000.000.000-00"
+            value={campos.cpf}
+            onChange={alterarCampo}
+            required
+          />
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="telefone">Número de telefone</label>
+          <input
+            id="telefone"
+            name="telefone"
+            inputMode="tel"
+            placeholder="(11) 90000-0000"
+            value={campos.telefone}
+            onChange={alterarCampo}
+            required
+          />
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="genero">Gênero</label>
+          <select id="genero" name="genero" value={campos.genero} onChange={alterarCampo} required>
+            <option value="">Selecione</option>
+            {generos.map((genero) => (
+              <option key={genero} value={genero}>
+                {genero === "Outro" ? "Outro / prefiro não informar" : genero}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="vinculo">Já foi aluno do Instituto?</label>
+          <select
+            id="vinculo"
+            name="vinculo"
+            value={campos.vinculo}
+            onChange={alterarCampo}
+            required
+          >
+            <option value="">Selecione</option>
+            {vinculos.map((vinculo) => (
+              <option key={vinculo} value={vinculo}>
+                {vinculo}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="formulario-campo">
+          <label htmlFor="cursoInteresse">Curso de interesse</label>
+          <select
+            id="cursoInteresse"
+            name="cursoInteresse"
+            value={campos.cursoInteresse}
+            onChange={alterarCampo}
+            required
+          >
+            <option value="">Selecione um curso</option>
+            {nomesDeCursos.map((nome) => (
+              <option key={nome} value={nome}>
+                {nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="formulario-campo formulario-campo-largo">
+          <label htmlFor="comoSoube">Como ficou sabendo da feira?</label>
+          <select
+            id="comoSoube"
+            name="comoSoube"
+            value={campos.comoSoube}
+            onChange={alterarCampo}
+            required
+          >
+            <option value="">Selecione</option>
+            {canaisDivulgacao.map((canal) => (
+              <option key={canal} value={canal}>
+                {canal}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="formulario-campo">
-        <label htmlFor="telefone">Telefone</label>
-        <input
-          id="telefone"
-          name="telefone"
-          value={campos.telefone}
-          onChange={alterarCampo}
-          required
-        />
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="email">E-mail</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          value={campos.email}
-          onChange={alterarCampo}
-          required
-        />
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="escola">Escola</label>
-        <input id="escola" name="escola" value={campos.escola} onChange={alterarCampo} required />
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="serie">Série</label>
-        <input id="serie" name="serie" value={campos.serie} onChange={alterarCampo} required />
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="cursoInteresse">Curso de Interesse</label>
-        <select
-          id="cursoInteresse"
-          name="cursoInteresse"
-          value={campos.cursoInteresse}
-          onChange={alterarCampo}
-          required
-        >
-          <option value="">Selecione um curso</option>
-          {cursos.map((curso) => (
-            <option key={curso.id} value={curso.nome}>
-              {curso.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="genero">Gênero</label>
-        <select id="genero" name="genero" value={campos.genero} onChange={alterarCampo} required>
-          <option value="">Selecione</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Feminino">Feminino</option>
-          <option value="Outro">Prefiro não informar</option>
-        </select>
-      </div>
-
-      <div className="formulario-campo">
-        <label htmlFor="jaEstudou">Já estudou no Instituto?</label>
-        <select id="jaEstudou" name="jaEstudou" value={campos.jaEstudou} onChange={alterarCampo}>
-          <option value="Não">Não</option>
-          <option value="Sim">Sim</option>
-        </select>
-      </div>
+      {erro && <p className="formulario-erro">{erro}</p>}
 
       <button type="submit" className="botao-azul formulario-enviar">
-
-        Confirmar Inscrição
+        Confirmar inscrição
       </button>
 
       {visitanteCadastrado && (
@@ -121,7 +209,10 @@ function Formulario({ onCadastrar, mostrarQrCode = true }) {
             Inscrição confirmada, <strong>{visitanteCadastrado.nome}</strong>!
           </p>
           {mostrarQrCode && (
-            <QRCodeVisitante codigo={visitanteCadastrado.codigoQr} tamanho={130} />
+            <>
+              <QRCodeVisitante codigo={visitanteCadastrado.codigoQr} tamanho={130} />
+              <p className="formulario-codigo">{visitanteCadastrado.codigoQr}</p>
+            </>
           )}
         </div>
       )}

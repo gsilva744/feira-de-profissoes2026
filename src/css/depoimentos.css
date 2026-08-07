@@ -47,3 +47,47 @@
     grid-template-columns: 1fr;
   }
 }
+
+.depoimentos-intro {
+  text-align: center;
+  font-size: 14px;
+  color: var(--texto-claro);
+  margin: -18px auto 26px;
+  max-width: 620px;
+}
+
+.depoimentos-foto-area {
+  background: linear-gradient(135deg, var(--amarelo), var(--amarelo-escuro));
+  border-radius: var(--raio);
+  padding: 6px;
+}
+
+.depoimentos-aspas {
+  display: block;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--amarelo);
+}
+
+.depoimentos-pontos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.depoimentos-ponto {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--cinza-borda);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.depoimentos-ponto:hover {
+  transform: scale(1.15);
+}
+
+.depoimentos-ponto.ativo {
+  background-color: var(--azul);
+}

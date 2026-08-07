@@ -232,3 +232,86 @@
     display: none;
   }
 }
+
+/* Seletor de turma / setor de atracao */
+.leitor-setores {
+  background-color: var(--cinza-fundo);
+  border: 1px solid var(--cinza-borda);
+  border-radius: var(--raio);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.leitor-setores-rotulo {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--texto-claro);
+  margin-bottom: 10px;
+}
+
+.leitor-setores-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.leitor-setores-botoes button {
+  background-color: var(--branco);
+  color: var(--azul);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.leitor-setores-botoes button:hover {
+  transform: translateY(-2px);
+}
+
+.leitor-setores-botoes .ativo {
+  background-color: var(--azul);
+  color: var(--branco);
+  border-color: var(--azul);
+}
+
+.leitor-setores-total {
+  font-size: 12px;
+  color: var(--texto-claro);
+  margin-top: 10px;
+}
+
+.leitor-camera {
+  position: relative;
+}
+
+.leitor-mensagem-alerta {
+  color: #b00020;
+}
+
+.leitor-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.leitor-historico-setor {
+  background-color: var(--cinza-fundo);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 11px;
+  color: var(--azul);
+  font-weight: bold;
+}
+
+.cracha-setor {
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--azul);
+}

@@ -264,3 +264,20 @@
     min-width: 0;
   }
 }
+
+.admin-topo-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-topo-marca img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  background-color: var(--branco);
+  border-radius: 50%;
+  padding: 3px;
+  flex-shrink: 0;
+}

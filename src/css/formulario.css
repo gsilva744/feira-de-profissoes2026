@@ -88,3 +88,36 @@
     grid-template-columns: 1fr;
   }
 }
+
+.formulario-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 14px;
+}
+
+.formulario-campo-largo {
+  grid-column: 1 / -1;
+}
+
+.formulario-erro {
+  background-color: #fdeaea;
+  color: #b00020;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.formulario-codigo {
+  font-size: 10px;
+  color: var(--texto-claro);
+  word-break: break-all;
+  margin-top: 6px;
+}
+
+@media (max-width: 560px) {
+  .formulario-grade {
+    grid-template-columns: 1fr;
+  }
+}

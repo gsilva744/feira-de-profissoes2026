@@ -1,21 +1,29 @@
+import { useMemo, useState } from "react";
 import { useVisitantes } from "../../utils/VisitantesContext";
+import { generos, setores, vinculos } from "../../data/setores";
 import "../../css/dashboard.css";
 
-/* Calcula a porcentagem simples evitando divisao por zero */
-function calcularPorcentagem(parte, total) {
-  if (total === 0) return 0;
+function porcentagem(parte, total) {
+  if (!total) return 0;
   return Math.round((parte / total) * 100);
 }
 
+const coresGenero = {
+  Masculino: "var(--azul)",
+  Feminino: "var(--amarelo)",
+  Outro: "var(--azul-claro)",
+};
+
 /* Grafico de rosca desenhado com SVG puro */
-function Rosca({ porcentagem, cor, rotulo, valor }) {
+function Rosca({ valor, total, cor, rotulo }) {
   const raio = 42;
   const perimetro = 2 * Math.PI * raio;
-  const preenchido = (porcentagem / 100) * perimetro;
+  const pct = porcentagem(valor, total);
+  const preenchido = (pct / 100) * perimetro;
 
   return (
     <div className="dashboard-rosca">
-      <svg viewBox="0 0 100 100" className="dashboard-rosca-svg">
+      <svg viewBox="0 0 100 100" className="dashboard-rosca-svg" role="img" aria-label={rotulo}>
         <circle cx="50" cy="50" r={raio} className="dashboard-rosca-trilha" />
         <circle
           cx="50"
@@ -26,7 +34,7 @@ function Rosca({ porcentagem, cor, rotulo, valor }) {
           strokeDasharray={`${preenchido} ${perimetro}`}
         />
         <text x="50" y="54" className="dashboard-rosca-texto">
-          {porcentagem}%
+          {pct}%
         </text>
       </svg>
       <span className="dashboard-rosca-rotulo">{rotulo}</span>
@@ -35,42 +43,265 @@ function Rosca({ porcentagem, cor, rotulo, valor }) {
   );
 }
 
+function Kpi({ rotulo, valor, detalhe, destaque }) {
+  return (
+    <div className={destaque ? "dashboard-cartao dashboard-cartao-amarelo" : "dashboard-cartao"}>
+      <span className="dashboard-cartao-rotulo">{rotulo}</span>
+      <strong className="dashboard-cartao-numero">{valor}</strong>
+      {detalhe && <span className="dashboard-cartao-detalhe">{detalhe}</span>}
+    </div>
+  );
+}
+
 function Dashboard() {
-  const { visitantes } = useVisitantes();
-  const total = visitantes.length;
+  const { visitantes, presencas } = useVisitantes();
+  const [filtroVinculo, setFiltroVinculo] = useState("Todos");
+  const [filtroGenero, setFiltroGenero] = useState("Todos");
+  const [porGenero, setPorGenero] = useState(false);
 
-  const homens = visitantes.filter((visitante) => visitante.genero === "Masculino").length;
-  const mulheres = visitantes.filter((visitante) => visitante.genero === "Feminino").length;
-  const outros = total - homens - mulheres;
-  const jaEstudaram = visitantes.filter((visitante) => visitante.jaEstudou === "Sim").length;
+  const visitantesPorId = useMemo(() => {
+    const mapa = new Map();
+    visitantes.forEach((visitante) => mapa.set(visitante.id, visitante));
+    return mapa;
+  }, [visitantes]);
 
-  /* Agrupa os inscritos por curso de interesse para o grafico de barras */
-  const porCurso = {};
-  visitantes.forEach((visitante) => {
-    const curso = visitante.cursoInteresse || "Não informado";
-    porCurso[curso] = (porCurso[curso] || 0) + 1;
-  });
-  const listaCursos = Object.entries(porCurso).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const maiorCurso = listaCursos.length > 0 ? listaCursos[0][1] : 0;
+  /* Aplica os filtros de vínculo e gênero a inscritos e presenças */
+  const inscritosFiltrados = useMemo(
+    () =>
+      visitantes.filter(
+        (visitante) =>
+          (filtroVinculo === "Todos" || visitante.vinculo === filtroVinculo) &&
+          (filtroGenero === "Todos" || visitante.genero === filtroGenero),
+      ),
+    [visitantes, filtroVinculo, filtroGenero],
+  );
+
+  const presencasFiltradas = useMemo(
+    () =>
+      presencas
+        .map((presenca) => ({ ...presenca, visitante: visitantesPorId.get(presenca.visitanteId) }))
+        .filter(
+          (presenca) =>
+            presenca.visitante &&
+            (filtroVinculo === "Todos" || presenca.visitante.vinculo === filtroVinculo) &&
+            (filtroGenero === "Todos" || presenca.visitante.genero === filtroGenero),
+        ),
+    [presencas, visitantesPorId, filtroVinculo, filtroGenero],
+  );
+
+  const totalInscritos = inscritosFiltrados.length;
+  const totalPresencas = presencasFiltradas.length;
+  const visitantesPresentes = new Set(presencasFiltradas.map((item) => item.visitanteId)).size;
+
+  const linhasSetores = useMemo(
+    () =>
+      setores.map((setor) => {
+        const doSetor = presencasFiltradas.filter((presenca) => presenca.setor === setor.id);
+        return {
+          ...setor,
+          total: doSetor.length,
+          Masculino: doSetor.filter((item) => item.visitante.genero === "Masculino").length,
+          Feminino: doSetor.filter((item) => item.visitante.genero === "Feminino").length,
+          Outro: doSetor.filter(
+            (item) => !["Masculino", "Feminino"].includes(item.visitante.genero),
+          ).length,
+          alunosAtuais: doSetor.filter((item) => item.visitante.vinculo === "Aluno atual").length,
+          exAlunos: doSetor.filter((item) => item.visitante.vinculo === "Ex-aluno").length,
+        };
+      }),
+    [presencasFiltradas],
+  );
+
+  const maiorSetor = Math.max(1, ...linhasSetores.map((linha) => linha.total));
+  const setorLider = [...linhasSetores].sort((a, b) => b.total - a.total)[0];
+
+  const generosContagem = generos.map((genero) => ({
+    genero,
+    valor: inscritosFiltrados.filter((visitante) =>
+      genero === "Outro"
+        ? !["Masculino", "Feminino"].includes(visitante.genero)
+        : visitante.genero === genero,
+    ).length,
+  }));
+
+  const alunosAtuais = inscritosFiltrados.filter((v) => v.vinculo === "Aluno atual").length;
+  const exAlunos = inscritosFiltrados.filter((v) => v.vinculo === "Ex-aluno").length;
+
+  function ranking(campo, limite = 6) {
+    const mapa = {};
+    inscritosFiltrados.forEach((visitante) => {
+      const chave = visitante[campo] || "Não informado";
+      mapa[chave] = (mapa[chave] || 0) + 1;
+    });
+    return Object.entries(mapa)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limite);
+  }
+
+  const listaCursos = ranking("cursoInteresse");
+  const listaCanais = ranking("comoSoube");
+  const maiorCurso = listaCursos[0]?.[1] || 1;
+  const maiorCanal = listaCanais[0]?.[1] || 1;
 
   return (
     <div className="dashboard">
+      <div className="dashboard-filtros">
+        <div className="dashboard-filtro">
+          <label htmlFor="filtro-vinculo">Vínculo com o Instituto</label>
+          <select
+            id="filtro-vinculo"
+            value={filtroVinculo}
+            onChange={(evento) => setFiltroVinculo(evento.target.value)}
+          >
+            <option value="Todos">Todos os visitantes</option>
+            {vinculos.map((vinculo) => (
+              <option key={vinculo} value={vinculo}>
+                {vinculo}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="dashboard-filtro">
+          <label htmlFor="filtro-genero">Gênero</label>
+          <select
+            id="filtro-genero"
+            value={filtroGenero}
+            onChange={(evento) => setFiltroGenero(evento.target.value)}
+          >
+            <option value="Todos">Todos os gêneros</option>
+            {generos.map((genero) => (
+              <option key={genero} value={genero}>
+                {genero}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <label className="dashboard-alternador">
+          <input
+            type="checkbox"
+            checked={porGenero}
+            onChange={(evento) => setPorGenero(evento.target.checked)}
+          />
+          Ver presença separada por gênero
+        </label>
+      </div>
+
       <div className="dashboard-cartoes">
-        <div className="dashboard-cartao">
-          <span className="dashboard-cartao-rotulo">Quantidade de inscrições</span>
-          <strong className="dashboard-cartao-numero">{total}</strong>
+        <Kpi
+          rotulo="Inscritos"
+          valor={totalInscritos}
+          detalhe={`${visitantes.length} no total geral`}
+        />
+        <Kpi
+          rotulo="Presenças registradas"
+          valor={totalPresencas}
+          detalhe={`${linhasSetores.length} setores monitorados`}
+          destaque
+        />
+        <Kpi
+          rotulo="Comparecimento"
+          valor={`${porcentagem(visitantesPresentes, totalInscritos)}%`}
+          detalhe={`${visitantesPresentes} de ${totalInscritos} inscritos`}
+        />
+        <Kpi
+          rotulo="Setores por visitante"
+          valor={visitantesPresentes ? (totalPresencas / visitantesPresentes).toFixed(1) : "0,0"}
+          detalhe={setorLider?.total ? `Líder: ${setorLider.nome}` : "Sem leituras ainda"}
+          destaque
+        />
+      </div>
+
+      <div className="dashboard-bloco dashboard-bloco-largo">
+        <div className="dashboard-bloco-topo">
+          <h3 className="dashboard-bloco-titulo">Presença por turma / setor de atração</h3>
+          <span className="dashboard-bloco-legenda">
+            {porGenero ? "Distribuição por gênero" : "Total de pessoas por setor"}
+          </span>
         </div>
-        <div className="dashboard-cartao dashboard-cartao-amarelo">
-          <span className="dashboard-cartao-rotulo">Já estudaram no Instituto</span>
-          <strong className="dashboard-cartao-numero">{jaEstudaram}</strong>
-        </div>
-        <div className="dashboard-cartao">
-          <span className="dashboard-cartao-rotulo">Homens</span>
-          <strong className="dashboard-cartao-numero">{homens}</strong>
-        </div>
-        <div className="dashboard-cartao dashboard-cartao-amarelo">
-          <span className="dashboard-cartao-rotulo">Mulheres</span>
-          <strong className="dashboard-cartao-numero">{mulheres}</strong>
+
+        {totalPresencas === 0 ? (
+          <p className="admin-vazio">
+            Nenhuma presença registrada com esses filtros. Use o Leitor QR durante a feira.
+          </p>
+        ) : (
+          <ul className="dashboard-barras">
+            {linhasSetores.map((linha) => (
+              <li key={linha.id} className="dashboard-barra-item">
+                <span className="dashboard-barra-nome">{linha.nome}</span>
+                <span className="dashboard-barra-trilha">
+                  {porGenero ? (
+                    <span className="dashboard-barra-empilhada">
+                      {generos.map((genero) => (
+                        <span
+                          key={genero}
+                          className="dashboard-barra-fatia"
+                          title={`${genero}: ${linha[genero]}`}
+                          style={{
+                            width: `${porcentagem(linha[genero], maiorSetor)}%`,
+                            backgroundColor: coresGenero[genero],
+                          }}
+                        />
+                      ))}
+                    </span>
+                  ) : (
+                    <span
+                      className="dashboard-barra-preenchida"
+                      style={{ width: `${porcentagem(linha.total, maiorSetor)}%` }}
+                    />
+                  )}
+                </span>
+                <span className="dashboard-barra-numero">{linha.total}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {porGenero && (
+          <div className="dashboard-legenda-cores">
+            {generos.map((genero) => (
+              <span key={genero}>
+                <i style={{ backgroundColor: coresGenero[genero] }} />
+                {genero}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="admin-tabela-area">
+          <table className="admin-tabela dashboard-tabela">
+            <thead>
+              <tr>
+                <th>Setor</th>
+                <th>Total</th>
+                <th>Homens</th>
+                <th>Mulheres</th>
+                <th>Outros</th>
+                <th>Alunos atuais</th>
+                <th>Ex-alunos</th>
+                <th>% do público</th>
+              </tr>
+            </thead>
+            <tbody>
+              {linhasSetores.map((linha) => (
+                <tr key={linha.id}>
+                  <td>
+                    <strong>{linha.nome}</strong>
+                    <br />
+                    <small>{linha.andar}</small>
+                  </td>
+                  <td>{linha.total}</td>
+                  <td>{linha.Masculino}</td>
+                  <td>{linha.Feminino}</td>
+                  <td>{linha.Outro}</td>
+                  <td>{linha.alunosAtuais}</td>
+                  <td>{linha.exAlunos}</td>
+                  <td>{porcentagem(linha.total, totalPresencas)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -78,30 +309,32 @@ function Dashboard() {
         <div className="dashboard-bloco">
           <h3 className="dashboard-bloco-titulo">Perfil dos inscritos</h3>
           <div className="dashboard-roscas">
+            {generosContagem.map((item) => (
+              <Rosca
+                key={item.genero}
+                valor={item.valor}
+                total={totalInscritos}
+                cor={coresGenero[item.genero]}
+                rotulo={item.genero}
+              />
+            ))}
             <Rosca
-              porcentagem={calcularPorcentagem(homens, total)}
-              cor="var(--azul)"
-              rotulo="Homens"
-              valor={homens}
-            />
-            <Rosca
-              porcentagem={calcularPorcentagem(mulheres, total)}
-              cor="var(--amarelo)"
-              rotulo="Mulheres"
-              valor={mulheres}
-            />
-            <Rosca
-              porcentagem={calcularPorcentagem(outros, total)}
-              cor="var(--azul-claro)"
-              rotulo="Outros"
-              valor={outros}
-            />
-            <Rosca
-              porcentagem={calcularPorcentagem(jaEstudaram, total)}
+              valor={alunosAtuais + exAlunos}
+              total={totalInscritos}
               cor="var(--amarelo-escuro)"
-              rotulo="Já estudaram"
-              valor={jaEstudaram}
+              rotulo="Vínculo com o Instituto"
             />
+          </div>
+          <div className="dashboard-mini-cartoes">
+            <span>
+              <strong>{alunosAtuais}</strong> alunos atuais
+            </span>
+            <span>
+              <strong>{exAlunos}</strong> ex-alunos
+            </span>
+            <span>
+              <strong>{totalInscritos - alunosAtuais - exAlunos}</strong> público externo
+            </span>
           </div>
         </div>
 
@@ -117,7 +350,29 @@ function Dashboard() {
                   <span className="dashboard-barra-trilha">
                     <span
                       className="dashboard-barra-preenchida"
-                      style={{ width: `${calcularPorcentagem(quantidade, maiorCurso)}%` }}
+                      style={{ width: `${porcentagem(quantidade, maiorCurso)}%` }}
+                    />
+                  </span>
+                  <span className="dashboard-barra-numero">{quantidade}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <h3 className="dashboard-bloco-titulo dashboard-bloco-titulo-espacado">
+            Como ficaram sabendo da feira
+          </h3>
+          {listaCanais.length === 0 ? (
+            <p className="admin-vazio">Nenhum dado para exibir ainda.</p>
+          ) : (
+            <ul className="dashboard-barras">
+              {listaCanais.map(([canal, quantidade]) => (
+                <li key={canal} className="dashboard-barra-item">
+                  <span className="dashboard-barra-nome">{canal}</span>
+                  <span className="dashboard-barra-trilha">
+                    <span
+                      className="dashboard-barra-preenchida dashboard-barra-amarela"
+                      style={{ width: `${porcentagem(quantidade, maiorCanal)}%` }}
                     />
                   </span>
                   <span className="dashboard-barra-numero">{quantidade}</span>
