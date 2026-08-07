@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import logoFeira from "../../assets/logoFeira.png.asset.json";
 import "../../css/header.css";
 
 const itensMenu = [
   { id: "inicio", nome: "Início" },
+  { id: "sobre", nome: "Sobre" },
   { id: "programacao", nome: "Programação" },
   { id: "local", nome: "Local" },
   { id: "cursos", nome: "Cursos" },
+  { id: "inscricao", nome: "Inscrição" },
   { id: "contato", nome: "Contato" },
 ];
 
@@ -23,23 +26,19 @@ function Header({ onAbrirAreaRestrita }) {
 
   function irParaSecao(id) {
     setMenuAberto(false);
-    const secao = document.getElementById(id);
-    if (secao) {
-      secao.scrollIntoView({ behavior: "smooth" });
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
     <header className={reduzido ? "header header-reduzido" : "header"}>
       <div className="container header-conteudo">
-        <div className="header-logo">
-          <span className="header-logo-marca">ISF</span>
+        <a className="header-logo" href="#inicio">
+          <img src={logoFeira.url} alt="Logo da 6ª Feira das Profissões" />
           <span className="header-logo-texto">
             Instituto Social
-            <br />
-            Nossa Senhora de Fátima
+            <strong>Nossa Senhora de Fátima</strong>
           </span>
-        </div>
+        </a>
 
         <nav className={menuAberto ? "header-menu header-menu-aberto" : "header-menu"}>
           {itensMenu.map((item) => (

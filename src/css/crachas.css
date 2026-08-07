@@ -124,3 +124,20 @@
     break-inside: avoid;
   }
 }
+
+.crachas-aviso {
+  font-size: 12px;
+  color: #b00020;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.crachas-titulo-previa {
+  color: var(--azul);
+  font-size: 14px;
+  margin: 8px 0 12px;
+}
+
+.crachas-barra .admin-busca {
+  flex: 1;
+}

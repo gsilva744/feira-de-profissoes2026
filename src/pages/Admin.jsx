@@ -6,31 +6,51 @@ import QRCodeVisitante from "../components/QRCode/QRCodeVisitante";
 import LeitorQr from "../components/LeitorQr/LeitorQr";
 import Crachas from "../components/Crachas/Crachas";
 import Dashboard from "../components/Dashboard/Dashboard";
-
+import logoFeira from "../assets/logoFeira.png.asset.json";
 import { useVisitantes } from "../utils/VisitantesContext";
+import { canaisDivulgacao, generos, vinculos } from "../data/setores";
 import { cursos } from "../data/cursos";
+import { abrirJanelaImpressao, compartilharCredencial } from "../utils/impressao";
 import "../css/formulario.css";
 import "../css/admin.css";
 
+const abas = [
+  { id: "dashboard", nome: "Dashboard" },
+  { id: "visitantes", nome: "Visitantes" },
+  { id: "credenciamento", nome: "Credenciamento" },
+  { id: "leitor", nome: "Leitor QR" },
+  { id: "impressao", nome: "Impressão" },
+];
+
+const nomesDeCursos = Array.from(new Set(cursos.map((curso) => curso.nome)));
 
 function Admin() {
-  const { visitantes, adicionarVisitante, atualizarVisitante, removerVisitante } = useVisitantes();
+  const { visitantes, presencas, adicionarVisitante, atualizarVisitante, removerVisitante } =
+    useVisitantes();
   const [abaAtiva, setAbaAtiva] = useState("dashboard");
   const [busca, setBusca] = useState("");
   const [visitanteQrCode, setVisitanteQrCode] = useState(null);
-  const [visitanteDetalhe, setVisitanteDetalhe] = useState(null);
   const [visitanteEdicao, setVisitanteEdicao] = useState(null);
   const [visitanteExclusao, setVisitanteExclusao] = useState(null);
 
-  const textoBusca = busca.trim().toLowerCase();
-  const visitantesFiltrados = visitantes.filter((visitante) =>
-    [visitante.nome, visitante.email, visitante.telefone]
+  const termos = busca.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const visitantesFiltrados = visitantes.filter((visitante) => {
+    const alvo = [
+      visitante.nome,
+      visitante.email,
+      visitante.cpf,
+      visitante.telefone,
+      visitante.cursoInteresse,
+      visitante.vinculo,
+      visitante.genero,
+      visitante.codigoQr,
+    ]
+      .filter(Boolean)
       .join(" ")
-      .toLowerCase()
-      .includes(textoBusca),
-  );
+      .toLowerCase();
+    return termos.every((termo) => alvo.includes(termo));
+  });
 
-  const totalEscolas = new Set(visitantes.map((visitante) => visitante.escola)).size;
   const totalCursos = new Set(visitantes.map((visitante) => visitante.cursoInteresse)).size;
 
   function salvarEdicao(evento) {
@@ -49,13 +69,27 @@ function Admin() {
     setVisitanteExclusao(null);
   }
 
+  function imprimirCracha(visitante) {
+    const area = document.getElementById(`cracha-modal-${visitante.id}`);
+    if (!area) return;
+    abrirJanelaImpressao({
+      titulo: `Crachá · ${visitante.nome}`,
+      conteudo: `<div class="folha-grade">${area.innerHTML}</div>`,
+    });
+  }
+
   return (
     <div className="admin-pagina">
       <header className="admin-topo">
         <div className="container admin-topo-conteudo">
-          <div>
-            <strong>Instituto Social Nossa Senhora de Fátima</strong>
-            <span className="admin-topo-legenda">Painel administrativo · Feira 2026</span>
+          <div className="admin-topo-marca">
+            <img src={logoFeira.url} alt="Logo da 6ª Feira das Profissões" />
+            <div>
+              <strong>Instituto Social Nossa Senhora de Fátima</strong>
+              <span className="admin-topo-legenda">
+                Painel administrativo · 6ª Feira das Profissões 2026
+              </span>
+            </div>
           </div>
           <Link to="/" className="botao-amarelo">
             Voltar ao site
@@ -70,8 +104,8 @@ function Admin() {
             <span className="admin-resumo-rotulo">Visitantes inscritos</span>
           </div>
           <div className="admin-resumo-card">
-            <span className="admin-resumo-numero">{totalEscolas}</span>
-            <span className="admin-resumo-rotulo">Escolas participantes</span>
+            <span className="admin-resumo-numero">{presencas.length}</span>
+            <span className="admin-resumo-rotulo">Presenças registradas</span>
           </div>
           <div className="admin-resumo-card">
             <span className="admin-resumo-numero">{totalCursos}</span>
@@ -79,58 +113,34 @@ function Admin() {
           </div>
         </div>
 
-        <div className="admin-abas">
-          <button
-            className={abaAtiva === "dashboard" ? "admin-aba admin-aba-ativa" : "admin-aba"}
-            onClick={() => setAbaAtiva("dashboard")}
-          >
-            Dashboard
-          </button>
-          <button
-            className={abaAtiva === "visitantes" ? "admin-aba admin-aba-ativa" : "admin-aba"}
-            onClick={() => setAbaAtiva("visitantes")}
-          >
-            Visitantes
-          </button>
-
-          <button
-            className={abaAtiva === "credenciamento" ? "admin-aba admin-aba-ativa" : "admin-aba"}
-            onClick={() => setAbaAtiva("credenciamento")}
-          >
-            Credenciamento
-          </button>
-          <button
-            className={abaAtiva === "leitor" ? "admin-aba admin-aba-ativa" : "admin-aba"}
-            onClick={() => setAbaAtiva("leitor")}
-          >
-            Leitor QR
-          </button>
-          <button
-            className={abaAtiva === "impressao" ? "admin-aba admin-aba-ativa" : "admin-aba"}
-            onClick={() => setAbaAtiva("impressao")}
-          >
-            Impressão
-          </button>
-
-        </div>
+        <nav className="admin-abas">
+          {abas.map((aba) => (
+            <button
+              key={aba.id}
+              className={abaAtiva === aba.id ? "admin-aba admin-aba-ativa" : "admin-aba"}
+              onClick={() => setAbaAtiva(aba.id)}
+            >
+              {aba.nome}
+            </button>
+          ))}
+        </nav>
 
         {abaAtiva === "dashboard" && (
           <div className="admin-painel">
             <div className="admin-painel-topo">
-              <h2>Visão geral das inscrições</h2>
+              <h2>Visão geral da feira</h2>
             </div>
             <Dashboard />
           </div>
         )}
 
         {abaAtiva === "visitantes" && (
-
           <div className="admin-painel">
             <div className="admin-painel-topo">
               <h2>Lista de visitantes</h2>
               <input
                 className="admin-busca"
-                placeholder="Buscar por nome, e-mail ou telefone"
+                placeholder="Buscar por nome, e-mail, CPF, telefone ou curso"
                 value={busca}
                 onChange={(evento) => setBusca(evento.target.value)}
               />
@@ -148,24 +158,38 @@ function Admin() {
                   <thead>
                     <tr>
                       <th>Nome</th>
-                      <th>E-mail</th>
-                      <th>Telefone</th>
+                      <th>Contato</th>
+                      <th>CPF</th>
+                      <th>Curso de interesse</th>
+                      <th>Gênero</th>
+                      <th>Vínculo</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {visitantesFiltrados.map((visitante) => (
                       <tr key={visitante.id}>
-                        <td>{visitante.nome}</td>
-                        <td>{visitante.email}</td>
-                        <td>{visitante.telefone}</td>
+                        <td>
+                          <strong>{visitante.nome}</strong>
+                          <br />
+                          <small>{visitante.comoSoube}</small>
+                        </td>
+                        <td>
+                          {visitante.email}
+                          <br />
+                          <small>{visitante.telefone}</small>
+                        </td>
+                        <td>{visitante.cpf}</td>
+                        <td>{visitante.cursoInteresse}</td>
+                        <td>{visitante.genero}</td>
+                        <td>{visitante.vinculo}</td>
                         <td>
                           <div className="admin-acoes">
                             <button
-                              className="admin-acao"
-                              onClick={() => setVisitanteDetalhe(visitante)}
+                              className="admin-acao admin-acao-qr"
+                              onClick={() => setVisitanteQrCode(visitante)}
                             >
-                              Visualizar
+                              QR Code
                             </button>
                             <button
                               className="admin-acao"
@@ -178,12 +202,6 @@ function Admin() {
                               onClick={() => setVisitanteExclusao(visitante)}
                             >
                               Excluir
-                            </button>
-                            <button
-                              className="admin-acao admin-acao-qr"
-                              onClick={() => setVisitanteQrCode(visitante)}
-                            >
-                              QR Code
                             </button>
                           </div>
                         </td>
@@ -202,7 +220,11 @@ function Admin() {
               <h2>Credenciamento no local</h2>
             </div>
             <div className="admin-credenciamento">
-              <Formulario onCadastrar={adicionarVisitante} />
+              <Formulario
+                onCadastrar={adicionarVisitante}
+                titulo="Credenciamento"
+                descricao="Cadastre o visitante e gere a credencial com QR Code"
+              />
             </div>
           </div>
         )}
@@ -210,7 +232,7 @@ function Admin() {
         {abaAtiva === "leitor" && (
           <div className="admin-painel">
             <div className="admin-painel-topo">
-              <h2>Leitor de QR Code</h2>
+              <h2>Leitor de QR Code por turma</h2>
             </div>
             <LeitorQr />
           </div>
@@ -224,156 +246,151 @@ function Admin() {
             <Crachas />
           </div>
         )}
-
       </div>
 
       {visitanteQrCode && (
-        <Modal titulo="QR Code" onFechar={() => setVisitanteQrCode(null)}>
-          <p className="admin-modal-legenda">De {visitanteQrCode.nome}</p>
-          <QRCodeVisitante codigo={visitanteQrCode.codigoQr} />
-          <p className="admin-modal-codigo">{visitanteQrCode.codigoQr}</p>
-          <button
-            className="botao-amarelo formulario-enviar"
-            onClick={() => setVisitanteQrCode(null)}
-          >
-            Fechar
-          </button>
-        </Modal>
-      )}
-
-      {visitanteDetalhe && (
-        <Modal titulo="Dados do visitante" onFechar={() => setVisitanteDetalhe(null)}>
-          <div className="admin-detalhe">
-            <p>
-              <strong>Nome:</strong> {visitanteDetalhe.nome}
-            </p>
-            <p>
-              <strong>E-mail:</strong> {visitanteDetalhe.email}
-            </p>
-            <p>
-              <strong>Telefone:</strong> {visitanteDetalhe.telefone}
-            </p>
-            <p>
-              <strong>Escola:</strong> {visitanteDetalhe.escola}
-            </p>
-            <p>
-              <strong>Série:</strong> {visitanteDetalhe.serie}
-            </p>
-            <p>
-              <strong>Curso:</strong> {visitanteDetalhe.cursoInteresse}
-            </p>
-            <p>
-              <strong>Gênero:</strong> {visitanteDetalhe.genero || "Não informado"}
-            </p>
-            <p>
-              <strong>Já estudou:</strong> {visitanteDetalhe.jaEstudou || "Não"}
-            </p>
-            <p>
-              <strong>Código:</strong> {visitanteDetalhe.codigoQr}
-            </p>
-
+        <Modal titulo="QR Code do visitante" onFechar={() => setVisitanteQrCode(null)}>
+          <div id={`cracha-modal-${visitanteQrCode.id}`}>
+            <div className="cracha">
+              <div className="cracha-topo">
+                <strong>6ª Feira das Profissões 2026</strong>
+                <span>Instituto Social Nossa Senhora de Fátima</span>
+              </div>
+              <QRCodeVisitante codigo={visitanteQrCode.codigoQr} tamanho={150} />
+              <p className="cracha-nome">{visitanteQrCode.nome}</p>
+              <p className="cracha-linha">{visitanteQrCode.cursoInteresse}</p>
+              <p className="cracha-codigo">{visitanteQrCode.codigoQr}</p>
+            </div>
+          </div>
+          <div className="admin-modal-botoes">
+            <button className="botao-azul" onClick={() => imprimirCracha(visitanteQrCode)}>
+              Imprimir em PDF
+            </button>
+            <button
+              className="admin-acao"
+              onClick={() =>
+                compartilharCredencial({
+                  titulo: "Credencial Feira de Profissões 2026",
+                  texto: `${visitanteQrCode.nome} · Código ${visitanteQrCode.codigoQr}`,
+                })
+              }
+            >
+              Compartilhar
+            </button>
           </div>
         </Modal>
       )}
 
       {visitanteEdicao && (
         <Modal titulo="Editar visitante" onFechar={() => setVisitanteEdicao(null)}>
-          <form onSubmit={salvarEdicao} className="admin-formulario">
+          <form onSubmit={salvarEdicao}>
             <div className="formulario-campo">
-              <label htmlFor="editar-nome">Nome</label>
+              <label htmlFor="edicao-nome">Nome</label>
               <input
-                id="editar-nome"
+                id="edicao-nome"
                 name="nome"
-                value={visitanteEdicao.nome}
+                value={visitanteEdicao.nome || ""}
                 onChange={alterarCampoEdicao}
                 required
               />
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-email">E-mail</label>
+              <label htmlFor="edicao-email">E-mail</label>
               <input
-                id="editar-email"
+                id="edicao-email"
                 name="email"
                 type="email"
-                value={visitanteEdicao.email}
+                value={visitanteEdicao.email || ""}
                 onChange={alterarCampoEdicao}
-                required
               />
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-telefone">Telefone</label>
+              <label htmlFor="edicao-telefone">Telefone</label>
               <input
-                id="editar-telefone"
+                id="edicao-telefone"
                 name="telefone"
-                value={visitanteEdicao.telefone}
+                value={visitanteEdicao.telefone || ""}
                 onChange={alterarCampoEdicao}
-                required
               />
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-escola">Escola</label>
+              <label htmlFor="edicao-cpf">CPF</label>
               <input
-                id="editar-escola"
-                name="escola"
-                value={visitanteEdicao.escola}
+                id="edicao-cpf"
+                name="cpf"
+                value={visitanteEdicao.cpf || ""}
                 onChange={alterarCampoEdicao}
               />
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-serie">Série</label>
-              <input
-                id="editar-serie"
-                name="serie"
-                value={visitanteEdicao.serie}
-                onChange={alterarCampoEdicao}
-              />
-            </div>
-            <div className="formulario-campo">
-              <label htmlFor="editar-curso">Curso de Interesse</label>
+              <label htmlFor="edicao-curso">Curso de interesse</label>
               <select
-                id="editar-curso"
+                id="edicao-curso"
                 name="cursoInteresse"
-                value={visitanteEdicao.cursoInteresse}
+                value={visitanteEdicao.cursoInteresse || ""}
                 onChange={alterarCampoEdicao}
               >
-                <option value="">Selecione um curso</option>
-                {cursos.map((curso) => (
-                  <option key={curso.id} value={curso.nome}>
-                    {curso.nome}
+                <option value="">Selecione</option>
+                {nomesDeCursos.map((nome) => (
+                  <option key={nome} value={nome}>
+                    {nome}
                   </option>
                 ))}
               </select>
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-genero">Gênero</label>
+              <label htmlFor="edicao-genero">Gênero</label>
               <select
-                id="editar-genero"
+                id="edicao-genero"
                 name="genero"
                 value={visitanteEdicao.genero || ""}
                 onChange={alterarCampoEdicao}
               >
                 <option value="">Selecione</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Outro">Prefiro não informar</option>
+                {generos.map((genero) => (
+                  <option key={genero} value={genero}>
+                    {genero}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="formulario-campo">
-              <label htmlFor="editar-jaestudou">Já estudou no Instituto?</label>
+              <label htmlFor="edicao-vinculo">Vínculo</label>
               <select
-                id="editar-jaestudou"
-                name="jaEstudou"
-                value={visitanteEdicao.jaEstudou || "Não"}
+                id="edicao-vinculo"
+                name="vinculo"
+                value={visitanteEdicao.vinculo || ""}
                 onChange={alterarCampoEdicao}
               >
-                <option value="Não">Não</option>
-                <option value="Sim">Sim</option>
+                <option value="">Selecione</option>
+                {vinculos.map((vinculo) => (
+                  <option key={vinculo} value={vinculo}>
+                    {vinculo}
+                  </option>
+                ))}
               </select>
             </div>
-            <button type="submit" className="botao-azul formulario-enviar">
-
-              Salvar alterações
-            </button>
+            <div className="formulario-campo">
+              <label htmlFor="edicao-canal">Como soube da feira</label>
+              <select
+                id="edicao-canal"
+                name="comoSoube"
+                value={visitanteEdicao.comoSoube || ""}
+                onChange={alterarCampoEdicao}
+              >
+                <option value="">Selecione</option>
+                {canaisDivulgacao.map((canal) => (
+                  <option key={canal} value={canal}>
+                    {canal}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="admin-modal-botoes">
+              <button type="submit" className="botao-azul">
+                Salvar alterações
+              </button>
+            </div>
           </form>
         </Modal>
       )}
@@ -381,14 +398,15 @@ function Admin() {
       {visitanteExclusao && (
         <Modal titulo="Excluir visitante" onFechar={() => setVisitanteExclusao(null)}>
           <p className="admin-modal-legenda">
-            Deseja realmente excluir <strong>{visitanteExclusao.nome}</strong>?
+            Deseja realmente excluir <strong>{visitanteExclusao.nome}</strong>? As presenças
+            registradas também serão removidas.
           </p>
           <div className="admin-modal-botoes">
-            <button className="botao-azul" onClick={() => setVisitanteExclusao(null)}>
-              Cancelar
-            </button>
             <button className="admin-botao-excluir" onClick={confirmarExclusao}>
               Excluir
+            </button>
+            <button className="admin-acao" onClick={() => setVisitanteExclusao(null)}>
+              Cancelar
             </button>
           </div>
         </Modal>

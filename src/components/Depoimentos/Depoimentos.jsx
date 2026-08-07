@@ -6,35 +6,40 @@ function Depoimentos() {
   const [indice, setIndice] = useState(0);
   const depoimento = depoimentos[indice];
 
-  function anterior() {
-    setIndice((atual) => (atual === 0 ? depoimentos.length - 1 : atual - 1));
-  }
-
-  function proximo() {
-    setIndice((atual) => (atual === depoimentos.length - 1 ? 0 : atual + 1));
-  }
-
   return (
-    <section className="secao">
+    <section className="secao" id="depoimentos">
       <div className="container">
         <h2 className="titulo-secao">Depoimentos</h2>
+        <p className="depoimentos-intro">
+          Quem passou pelo Instituto conta como a formação mudou a sua trajetória.
+        </p>
 
         <div className="depoimentos-card" key={depoimento.id}>
-          <img className="depoimentos-foto" src={depoimento.foto} alt={depoimento.nome} loading="lazy" />
-          <div>
+          <div className="depoimentos-foto-area">
+            <img
+              className="depoimentos-foto"
+              src={depoimento.foto}
+              alt={`Foto de ${depoimento.nome}`}
+              loading="lazy"
+            />
+          </div>
+          <div className="depoimentos-conteudo">
+            <span className="depoimentos-aspas">“</span>
             <p className="depoimentos-texto">{depoimento.texto}</p>
             <p className="depoimentos-nome">{depoimento.nome}</p>
             <p className="depoimentos-cargo">{depoimento.cargo}</p>
           </div>
         </div>
 
-        <div className="carrossel-controles">
-          <button className="botao-azul" onClick={anterior}>
-            Anterior
-          </button>
-          <button className="botao-azul" onClick={proximo}>
-            Próximo
-          </button>
+        <div className="depoimentos-pontos">
+          {depoimentos.map((item, posicao) => (
+            <button
+              key={item.id}
+              aria-label={`Ver depoimento de ${item.nome}`}
+              className={posicao === indice ? "depoimentos-ponto ativo" : "depoimentos-ponto"}
+              onClick={() => setIndice(posicao)}
+            />
+          ))}
         </div>
       </div>
     </section>

@@ -1,36 +1,66 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { lerQrCode } from "../../lib/qrcode";
 import { useVisitantes } from "../../utils/VisitantesContext";
+import { setores, nomeDoSetor } from "../../data/setores";
+import { abrirJanelaImpressao, compartilharCredencial } from "../../utils/impressao";
 import QRCodeVisitante from "../QRCode/QRCodeVisitante";
 import "../../css/leitor.css";
 
 /*
  * Leitor de QR Code proprio (sem servicos externos).
- * Aceita leitura pela camera e por upload de imagem.
+ * A leitura é sempre vinculada a uma turma / setor de atração,
+ * gerando os dados de presença analisados no dashboard.
  */
 function LeitorQr() {
-  const { visitantes } = useVisitantes();
+  const { presencas, registrarPresenca } = useVisitantes();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fluxoRef = useRef(null);
+  const cartaoRef = useRef(null);
+  const ultimoCodigoRef = useRef("");
+
+  const [setorAtivo, setSetorAtivo] = useState(setores[0].id);
   const [cameraLigada, setCameraLigada] = useState(false);
   const [mensagem, setMensagem] = useState("");
+  const [aviso, setAviso] = useState("");
   const [historico, setHistorico] = useState([]);
   const [ultimaLeitura, setUltimaLeitura] = useState(null);
 
+  const totalNoSetor = useMemo(
+    () => presencas.filter((presenca) => presenca.setor === setorAtivo).length,
+    [presencas, setorAtivo],
+  );
+
   function registrarLeitura(resultado) {
-    const visitante = visitantes.find((item) => item.codigoQr === resultado.texto) || null;
+    if (resultado.texto === ultimoCodigoRef.current) return;
+    ultimoCodigoRef.current = resultado.texto;
+    setTimeout(() => {
+      ultimoCodigoRef.current = "";
+    }, 2500);
+
+    const retorno = registrarPresenca(resultado.texto, setorAtivo);
     const leitura = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       texto: resultado.texto,
-      versao: resultado.versao,
-      nivel: resultado.nivel,
+      setor: setorAtivo,
+      status: retorno.status,
       horario: new Date().toLocaleTimeString("pt-BR"),
-      visitante,
+      visitante: retorno.visitante,
     };
+
     setUltimaLeitura(leitura);
-    setHistorico((lista) => [leitura, ...lista].slice(0, 20));
-    setMensagem(visitante ? `Visitante reconhecido: ${visitante.nome}` : "Código lido com sucesso");
+    setHistorico((lista) => [leitura, ...lista].slice(0, 30));
+
+    if (retorno.status === "registrado") {
+      setMensagem(`Presença registrada: ${retorno.visitante.nome}`);
+      setAviso("");
+    } else if (retorno.status === "repetido") {
+      setMensagem(`${retorno.visitante.nome} já estava registrado em ${nomeDoSetor(setorAtivo)}.`);
+      setAviso("");
+    } else {
+      setMensagem("");
+      setAviso("Código não encontrado na lista de inscritos.");
+    }
   }
 
   function pararCamera() {
@@ -42,7 +72,7 @@ function LeitorQr() {
   }
 
   async function ligarCamera() {
-    setMensagem("");
+    setAviso("");
     try {
       const fluxo = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
@@ -54,7 +84,7 @@ function LeitorQr() {
       }
       setCameraLigada(true);
     } catch {
-      setMensagem("Não foi possível acessar a câmera deste dispositivo.");
+      setAviso("Não foi possível acessar a câmera deste dispositivo.");
     }
   }
 
@@ -89,14 +119,14 @@ function LeitorQr() {
 
     return () => clearInterval(intervalo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cameraLigada, visitantes]);
+  }, [cameraLigada, setorAtivo, presencas]);
 
   useEffect(() => pararCamera, []);
 
   function lerArquivo(evento) {
     const arquivo = evento.target.files?.[0];
     if (!arquivo) return;
-    setMensagem("");
+    setAviso("");
 
     const imagemHtml = new Image();
     imagemHtml.onload = () => {
@@ -109,19 +139,54 @@ function LeitorQr() {
       const imagem = contexto.getImageData(0, 0, canvas.width, canvas.height);
       const resultado = lerQrCode(imagem);
       if (resultado) registrarLeitura(resultado);
-      else setMensagem("Nenhum QR Code encontrado nesta imagem.");
+      else setAviso("Nenhum QR Code encontrado nesta imagem.");
       URL.revokeObjectURL(imagemHtml.src);
     };
     imagemHtml.src = URL.createObjectURL(arquivo);
     evento.target.value = "";
   }
 
-  function imprimirLeitura() {
-    window.print();
+  /* Abre a folha de impressao (PDF) com o QR Code que acabou de ser lido */
+  function imprimirCredencial() {
+    if (!cartaoRef.current) return;
+    const conteudo = `<div class="folha-grade">${cartaoRef.current.innerHTML}</div>`;
+    const aberta = abrirJanelaImpressao({
+      titulo: `Credencial · ${nomeDoSetor(ultimaLeitura.setor)}`,
+      conteudo,
+    });
+    if (!aberta) setAviso("Libere as janelas pop-up do navegador para imprimir.");
+  }
+
+  async function compartilhar() {
+    const visitante = ultimaLeitura?.visitante;
+    const resultado = await compartilharCredencial({
+      titulo: "Credencial Feira de Profissões 2026",
+      texto: `${visitante ? visitante.nome : "Visitante"} · ${nomeDoSetor(ultimaLeitura.setor)} · Código ${ultimaLeitura.texto}`,
+    });
+    if (resultado === "copiado") setMensagem("Dados copiados para a área de transferência.");
   }
 
   return (
     <div className="leitor">
+      <div className="leitor-setores">
+        <span className="leitor-setores-rotulo">Turma / setor de atração</span>
+        <div className="leitor-setores-botoes">
+          {setores.map((setor) => (
+            <button
+              key={setor.id}
+              className={setor.id === setorAtivo ? "leitor-setor ativo" : "leitor-setor"}
+              onClick={() => setSetorAtivo(setor.id)}
+            >
+              {setor.nome}
+              <small>{setor.andar}</small>
+            </button>
+          ))}
+        </div>
+        <p className="leitor-setores-total">
+          {totalNoSetor} presença(s) registrada(s) em <strong>{nomeDoSetor(setorAtivo)}</strong>
+        </p>
+      </div>
+
       <div className="leitor-colunas">
         <div className="leitor-camera">
           <div className="leitor-video-area">
@@ -147,38 +212,59 @@ function LeitorQr() {
           </div>
 
           {mensagem && <p className="leitor-mensagem">{mensagem}</p>}
+          {aviso && <p className="leitor-mensagem leitor-mensagem-alerta">{aviso}</p>}
           <canvas ref={canvasRef} className="leitor-canvas" />
         </div>
 
         <div className="leitor-resultado">
           <h3>Última leitura</h3>
           {ultimaLeitura ? (
-            <div className="leitor-cartao" id="leitor-impressao">
-              <QRCodeVisitante codigo={ultimaLeitura.texto} tamanho={140} />
-              <p className="leitor-codigo">{ultimaLeitura.texto}</p>
-              <p className="leitor-info">
-                Versão {ultimaLeitura.versao} · correção {ultimaLeitura.nivel} ·{" "}
-                {ultimaLeitura.horario}
-              </p>
-              {ultimaLeitura.visitante ? (
-                <div className="leitor-visitante">
-                  <strong>{ultimaLeitura.visitante.nome}</strong>
-                  <span>{ultimaLeitura.visitante.email}</span>
-                  <span>{ultimaLeitura.visitante.cursoInteresse}</span>
-                  <span className="leitor-selo leitor-selo-ok">Credencial válida</span>
+            <div className="leitor-cartao">
+              <div ref={cartaoRef}>
+                <div className="cracha">
+                  <div className="cracha-topo">
+                    <strong>6ª Feira das Profissões 2026</strong>
+                    <span>Instituto Social Nossa Senhora de Fátima</span>
+                  </div>
+                  <QRCodeVisitante codigo={ultimaLeitura.texto} tamanho={130} />
+                  <p className="cracha-nome">
+                    {ultimaLeitura.visitante ? ultimaLeitura.visitante.nome : "Visitante não listado"}
+                  </p>
+                  <p className="cracha-linha">
+                    {ultimaLeitura.visitante?.cursoInteresse || "Curso não informado"}
+                  </p>
+                  <p className="cracha-setor">{nomeDoSetor(ultimaLeitura.setor)}</p>
+                  <p className="cracha-codigo">{ultimaLeitura.texto}</p>
                 </div>
-              ) : (
-                <span className="leitor-selo leitor-selo-alerta">
-                  Código não encontrado na lista
-                </span>
-              )}
-              <button className="botao-amarelo leitor-imprimir" onClick={imprimirLeitura}>
-                Imprimir ícone gerado
-              </button>
+              </div>
+
+              <span
+                className={
+                  ultimaLeitura.status === "desconhecido"
+                    ? "leitor-selo leitor-selo-alerta"
+                    : "leitor-selo leitor-selo-ok"
+                }
+              >
+                {ultimaLeitura.status === "registrado"
+                  ? "Presença registrada"
+                  : ultimaLeitura.status === "repetido"
+                    ? "Presença já registrada"
+                    : "Credencial não encontrada"}
+              </span>
+              <p className="leitor-info">Leitura às {ultimaLeitura.horario}</p>
+
+              <div className="leitor-acoes">
+                <button className="botao-amarelo" onClick={imprimirCredencial}>
+                  Imprimir credencial (PDF)
+                </button>
+                <button className="admin-acao" onClick={compartilhar}>
+                  Compartilhar
+                </button>
+              </div>
             </div>
           ) : (
             <p className="leitor-vazio">
-              Aponte um QR Code para a câmera ou envie uma imagem para começar.
+              Escolha a turma, aponte um QR Code para a câmera ou envie uma imagem para começar.
             </p>
           )}
 
@@ -193,11 +279,14 @@ function LeitorQr() {
                   <span className="leitor-historico-texto">
                     {leitura.visitante ? leitura.visitante.nome : leitura.texto}
                   </span>
+                  <span className="leitor-historico-setor">{nomeDoSetor(leitura.setor)}</span>
                   <span
                     className={
-                      leitura.visitante
+                      leitura.status === "registrado"
                         ? "leitor-ponto leitor-ponto-ok"
-                        : "leitor-ponto leitor-ponto-alerta"
+                        : leitura.status === "repetido"
+                          ? "leitor-ponto leitor-ponto-alerta"
+                          : "leitor-ponto leitor-ponto-erro"
                     }
                   />
                 </li>
