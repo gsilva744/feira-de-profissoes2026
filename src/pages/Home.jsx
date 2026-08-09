@@ -69,7 +69,9 @@ function Home() {
       </section>
 
       <Depoimentos />
+      <LivroDourado />
       <Parceiros />
+
       <Footer />
 
       {modalAberto && (
