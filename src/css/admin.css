@@ -263,6 +263,10 @@
     width: 100%;
     min-width: 0;
   }
+
+  .admin-topo-conteudo {
+    align-items: flex-start;
+  }
 }
 
 .admin-topo-marca {
@@ -280,4 +284,41 @@
   border-radius: 50%;
   padding: 3px;
   flex-shrink: 0;
+}
+
+@media (max-width: 540px) {
+  .admin-topo-conteudo {
+    flex-direction: column;
+  }
+
+  .admin-topo-conteudo .botao-amarelo {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-topo strong {
+    font-size: 14px;
+  }
+
+  .admin-painel {
+    padding: 14px;
+  }
+
+  .admin-abas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .admin-aba {
+    padding: 10px 8px;
+  }
+
+  .admin-modal-botoes {
+    flex-direction: column;
+  }
+
+  .admin-modal-botoes > * {
+    width: 100%;
+  }
 }

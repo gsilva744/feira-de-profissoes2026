@@ -18,6 +18,8 @@
   padding: 20px;
   box-shadow: var(--sombra);
   position: relative;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
 }
 
 .modal-titulo {
@@ -39,4 +41,14 @@
 
 .modal-fechar:hover {
   color: var(--azul);
+}
+
+@media (max-width: 420px) {
+  .modal-fundo {
+    padding: 12px;
+  }
+
+  .modal-caixa {
+    padding: 18px 14px;
+  }
 }

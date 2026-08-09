@@ -18,6 +18,7 @@ function LeitorQr() {
   const fluxoRef = useRef(null);
   const cartaoRef = useRef(null);
   const ultimoCodigoRef = useRef("");
+  const detectorRef = useRef(null);
 
   const [setorAtivo, setSetorAtivo] = useState(setores[0].id);
   const [cameraLigada, setCameraLigada] = useState(false);
@@ -68,23 +69,72 @@ function LeitorQr() {
       fluxoRef.current.getTracks().forEach((trilha) => trilha.stop());
       fluxoRef.current = null;
     }
+    if (videoRef.current) videoRef.current.srcObject = null;
     setCameraLigada(false);
+  }
+
+  function mensagemErroCamera(erro) {
+    if (!window.isSecureContext) {
+      return "A câmera só funciona em um endereço seguro (HTTPS). Abra a versão publicada do site, não o IP da rede em HTTP.";
+    }
+    if (erro?.name === "NotAllowedError" || erro?.name === "SecurityError") {
+      return "O acesso à câmera foi bloqueado. Permita o uso da câmera nas configurações do navegador e tente novamente.";
+    }
+    if (erro?.name === "NotFoundError" || erro?.name === "DevicesNotFoundError") {
+      return "Nenhuma câmera foi encontrada neste dispositivo.";
+    }
+    if (erro?.name === "NotReadableError" || erro?.name === "TrackStartError") {
+      return "A câmera está sendo usada por outro aplicativo. Feche-o e tente novamente.";
+    }
+    return "Não foi possível acessar a câmera deste dispositivo.";
   }
 
   async function ligarCamera() {
     setAviso("");
+    setMensagem("");
+    pararCamera();
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setAviso("Este navegador não oferece suporte ao acesso à câmera.");
+      return;
+    }
+
     try {
-      const fluxo = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
+      let fluxo;
+      try {
+        fluxo = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch (erro) {
+        // Alguns aparelhos não expõem a câmera traseira com essa preferência.
+        if (erro?.name !== "OverconstrainedError") throw erro;
+        fluxo = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
       fluxoRef.current = fluxo;
       if (videoRef.current) {
         videoRef.current.srcObject = fluxo;
         await videoRef.current.play();
       }
+
+      if ("BarcodeDetector" in window) {
+        try {
+          detectorRef.current = new window.BarcodeDetector({ formats: ["qr_code"] });
+        } catch {
+          // Há navegadores que expõem a API, mas ainda não suportam QR Code.
+          detectorRef.current = null;
+        }
+      } else {
+        detectorRef.current = null;
+      }
       setCameraLigada(true);
-    } catch {
-      setAviso("Não foi possível acessar a câmera deste dispositivo.");
+    } catch (erro) {
+      pararCamera();
+      setAviso(mensagemErroCamera(erro));
     }
   }
 
@@ -92,30 +142,36 @@ function LeitorQr() {
   useEffect(() => {
     if (!cameraLigada) return undefined;
 
-    const intervalo = setInterval(() => {
+    let analisando = false;
+    const intervalo = setInterval(async () => {
+      if (analisando) return;
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas || !video.videoWidth) return;
+      analisando = true;
 
-      const lado = Math.min(video.videoWidth, video.videoHeight);
-      canvas.width = 360;
-      canvas.height = 360;
-      const contexto = canvas.getContext("2d");
-      contexto.drawImage(
-        video,
-        (video.videoWidth - lado) / 2,
-        (video.videoHeight - lado) / 2,
-        lado,
-        lado,
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      );
-      const imagem = contexto.getImageData(0, 0, canvas.width, canvas.height);
-      const resultado = lerQrCode(imagem);
-      if (resultado) registrarLeitura(resultado);
-    }, 300);
+      try {
+        if (detectorRef.current) {
+          const codigos = await detectorRef.current.detect(video);
+          if (codigos[0]?.rawValue) registrarLeitura({ texto: codigos[0].rawValue });
+          return;
+        }
+
+        // Mantém a imagem inteira e uma resolução maior para o leitor alternativo.
+        const escala = Math.min(1, 720 / Math.max(video.videoWidth, video.videoHeight));
+        canvas.width = Math.round(video.videoWidth * escala);
+        canvas.height = Math.round(video.videoHeight * escala);
+        const contexto = canvas.getContext("2d", { willReadFrequently: true });
+        contexto.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imagem = contexto.getImageData(0, 0, canvas.width, canvas.height);
+        const resultado = lerQrCode(imagem);
+        if (resultado) registrarLeitura(resultado);
+      } catch {
+        // Falhas ocasionais em um quadro não devem interromper a câmera.
+      } finally {
+        analisando = false;
+      }
+    }, 250);
 
     return () => clearInterval(intervalo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,7 +284,9 @@ function LeitorQr() {
                   </div>
                   <QRCodeVisitante codigo={ultimaLeitura.texto} tamanho={130} />
                   <p className="cracha-nome">
-                    {ultimaLeitura.visitante ? ultimaLeitura.visitante.nome : "Visitante não listado"}
+                    {ultimaLeitura.visitante
+                      ? ultimaLeitura.visitante.nome
+                      : "Visitante não listado"}
                   </p>
                   <p className="cracha-linha">
                     {ultimaLeitura.visitante?.cursoInteresse || "Curso não informado"}

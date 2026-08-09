@@ -107,7 +107,7 @@
 }
 
 .livro-passos li:hover, .livro-imagem:hover {
-  transform: translateY(-3);
+  transform: translateY(-3px);
 }
 
 @media (max-width: 860px) {
@@ -122,5 +122,20 @@
 
   .livro-texto > p {
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .livro {
+    padding: 48px 0;
+  }
+
+  .livro-texto h2 {
+    font-size: 25px;
+  }
+
+  .livro-passos li {
+    gap: 10px;
+    padding: 12px;
   }
 }

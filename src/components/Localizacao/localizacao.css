@@ -1,6 +1,8 @@
 .container-localizacao {
-  width: 70%;
+  width: 100%;
+  max-width: var(--largura);
   margin: auto;
+  padding: 0 20px;
 }
 
 .localizacao-card {
@@ -41,5 +43,32 @@
 @media (max-width: 768px) {
   .localizacao-card {
     grid-template-columns: 1fr;
+  }
+
+  .localizacao-info h3 {
+    font-size: 24px;
+  }
+
+  .localizacao-info h4 {
+    font-size: 20px;
+  }
+
+  .localizacao-info p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container-localizacao {
+    padding: 0 16px;
+  }
+
+  .localizacao-card {
+    padding: 16px;
+    gap: 18px;
+  }
+
+  .localizacao-mapa {
+    height: 240px;
   }
 }

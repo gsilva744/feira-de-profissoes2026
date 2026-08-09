@@ -45,6 +45,7 @@
   background-color: #fffdf3;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
 }
 
 .formulario-campo input:focus,
@@ -117,6 +118,10 @@
 }
 
 @media (max-width: 560px) {
+  .formulario-card {
+    padding: 16px;
+  }
+
   .formulario-grade {
     grid-template-columns: 1fr;
   }

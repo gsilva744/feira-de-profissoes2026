@@ -6,6 +6,10 @@
   margin-bottom: 24px;
 }
 
+.sobre-linha > * {
+  min-width: 0;
+}
+
 .sobre-imagem {
   width: 98%;
   margin: auto;
@@ -40,5 +44,17 @@
 
   .sobre-linha-invertida .sobre-imagem {
     order: -1;
+  }
+
+  .sobre-texto {
+    font-size: 17px;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .sobre-imagem {
+    width: 100%;
+    height: 210px;
   }
 }

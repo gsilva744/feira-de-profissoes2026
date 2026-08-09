@@ -327,3 +327,27 @@
   max-width: 420px;
   margin: 0 auto;
 }
+
+@media (max-width: 480px) {
+  .leitor-setores,
+  .leitor-cartao {
+    padding: 12px;
+  }
+
+  .leitor-setores-botoes button,
+  .leitor-upload {
+    width: 100%;
+    text-align: center;
+  }
+
+  .leitor-botoes,
+  .leitor-acoes {
+    flex-direction: column;
+  }
+
+  .leitor-historico li {
+    align-items: flex-start;
+    border-radius: var(--raio);
+    flex-wrap: wrap;
+  }
+}

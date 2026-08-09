@@ -27,6 +27,7 @@ body {
   color: var(--texto);
   background-color: var(--branco);
   line-height: 1.5;
+  overflow-x: clip;
 }
 
 img {
@@ -40,6 +41,13 @@ button {
   border: none;
 }
 
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -50,6 +58,10 @@ a {
   max-width: var(--largura);
   margin: 0 auto;
   padding: 0 20px;
+}
+
+.container > * {
+  min-width: 0;
 }
 
 .secao {
@@ -98,12 +110,21 @@ a {
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+
   .titulo-secao {
     font-size: 24px;
   }
 
   .secao {
     padding: 40px 0;
+  }
+
+  .botao-azul,
+  .botao-amarelo {
+    padding: 10px 20px;
   }
 }
 

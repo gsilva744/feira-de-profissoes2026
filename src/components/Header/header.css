@@ -18,7 +18,7 @@
   justify-content: space-between;
   gap: 16px;
   background-color: rgba(255, 255, 255, 0.253);
-  width: 80%;
+  width: min(80%, var(--largura));
   margin: auto;
   padding: 5px 10px;
   border-radius: 40px;
@@ -77,6 +77,9 @@
 }
 
 @media (max-width: 900px) {
+  .header-conteudo {
+    position: relative;
+  }
   .header-botao-menu {
     display: block;
   }
@@ -90,8 +93,8 @@
     flex-direction: column;
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
+    left: -10px;
+    right: -10px;
     background-color: var(--azul-escuro);
     padding: 16px 20px;
     gap: 12px;
@@ -99,6 +102,32 @@
 
   .header-acao {
     display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .header {
+    padding: 8px 0;
+  }
+
+  .header-conteudo {
+    width: calc(100% - 24px);
+    gap: 8px;
+  }
+
+  .header-logo {
+    min-width: 0;
+    gap: 7px;
+  }
+
+  .header-logo img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .header-logo-texto {
+    font-size: 11px;
+    letter-spacing: 0.2px;
   }
 }
 

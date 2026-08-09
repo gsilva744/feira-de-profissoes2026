@@ -167,3 +167,13 @@
     padding: 14px;
   }
 }
+
+@media (max-width: 480px) {
+  .cursos-categorias {
+    gap: 12px;
+  }
+
+  .cursos-categoria {
+    flex: 1 1 130px;
+  }
+}

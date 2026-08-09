@@ -1,6 +1,8 @@
 .container-depoimentos {
-  width: 67%;
+  width: 100%;
+  max-width: 820px;
   margin: auto;
+  padding: 0 20px;
 }
 
 .depoimentos-card {
@@ -20,6 +22,7 @@
 .depoimentos-foto {
   width: 100%;
   height: 250px;
+  object-fit: cover;
   border-radius: var(--raio);
 }
 
@@ -48,8 +51,33 @@
 }
 
 @media (max-width: 640px) {
+  .container-depoimentos {
+    padding: 0 16px;
+  }
+
   .depoimentos-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 140px 1fr;
+    padding: 16px;
+  }
+
+  .depoimentos-foto {
+    height: 200px;
+  }
+
+  .depoimentos-texto {
+    font-size: 12px;
+  }
+
+  .depoimentos-cargo {
+    font-size: 8px;
+    opacity: 0.8;
+  }
+
+  .depoimentos-nome {
+    color: var(--amarelo);
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 12px;
   }
 }
 

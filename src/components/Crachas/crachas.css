@@ -141,3 +141,17 @@
 .crachas-barra .admin-busca {
   flex: 1;
 }
+
+@media (max-width: 480px) {
+  .crachas-barra-botoes {
+    width: 100%;
+  }
+
+  .crachas-barra-botoes > * {
+    flex: 1;
+  }
+
+  .crachas-grade {
+    grid-template-columns: 1fr;
+  }
+}

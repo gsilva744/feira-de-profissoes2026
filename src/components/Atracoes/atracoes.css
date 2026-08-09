@@ -4,6 +4,10 @@
   gap: 24px;
 }
 
+.atracoes-cards > * {
+  min-width: 0;
+}
+
 .atracoes-card {
   background-color: var(--branco);
   border: 1px solid var(--cinza-borda);
@@ -151,5 +155,28 @@
 @media (max-width: 768px) {
   .atracoes-cards {
     grid-template-columns: 1fr;
+  }
+
+  .atracoes-card h3 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .atracoes-card {
+    padding: 16px;
+  }
+
+  .atracoes-botao,
+  .atracoes-item {
+    font-size: 15px;
+  }
+
+  .atracoes-botao {
+    align-items: flex-start;
+  }
+
+  .atracoes-contagem {
+    flex-shrink: 0;
   }
 }
