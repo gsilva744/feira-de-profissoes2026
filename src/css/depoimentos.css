@@ -57,10 +57,9 @@
 }
 
 .depoimentos-foto-area {
-  background: linear-gradient(135deg, var(--amarelo), var(--amarelo-escuro));
   border-radius: var(--raio);
-  padding: 6px;
 }
+
 
 .depoimentos-aspas {
   display: block;

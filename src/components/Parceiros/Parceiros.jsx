@@ -10,35 +10,39 @@ function Parceiros() {
   const inicio = pagina * porPagina;
   const parceirosVisiveis = parceiros.slice(inicio, inicio + porPagina);
 
-  function anterior() {
-    setPagina((atual) => (atual === 0 ? totalPaginas - 1 : atual - 1));
-  }
-
-  function proximo() {
-    setPagina((atual) => (atual === totalPaginas - 1 ? 0 : atual + 1));
-  }
-
   return (
-    <section className="secao secao-cinza">
+    <section className="secao secao-cinza" id="parceiros">
       <div className="container">
         <h2 className="titulo-secao">Parceiros</h2>
+        <p className="parceiros-intro">
+          Empresas e instituições que apoiam a formação dos nossos alunos.
+        </p>
 
-        <div className="parceiros-grade">
+        <div className="parceiros-grade" key={pagina}>
           {parceirosVisiveis.map((parceiro) => (
             <div className="parceiros-item" key={parceiro.id}>
-              <span className="parceiros-sigla">{parceiro.sigla}</span>
+              <img
+                className="parceiros-logo"
+                src={parceiro.logo}
+                alt={`Logo ${parceiro.nome}`}
+                loading="lazy"
+                width={512}
+                height={512}
+              />
               <span className="parceiros-nome">{parceiro.nome}</span>
             </div>
           ))}
         </div>
 
-        <div className="carrossel-controles">
-          <button className="botao-azul" onClick={anterior}>
-            Anterior
-          </button>
-          <button className="botao-azul" onClick={proximo}>
-            Próximo
-          </button>
+        <div className="parceiros-pontos">
+          {Array.from({ length: totalPaginas }).map((_, posicao) => (
+            <button
+              key={posicao}
+              aria-label={`Ver grupo ${posicao + 1} de parceiros`}
+              className={posicao === pagina ? "parceiros-ponto ativo" : "parceiros-ponto"}
+              onClick={() => setPagina(posicao)}
+            />
+          ))}
         </div>
       </div>
     </section>
