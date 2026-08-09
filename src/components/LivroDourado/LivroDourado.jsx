@@ -1,5 +1,5 @@
 import livroDourado from "../../assets/livro-dourado.jpg";
-import "../../css/livro-dourado.css";
+import "./livro-dourado.css";
 
 const passos = [
   {

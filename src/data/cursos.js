@@ -1,8 +1,18 @@
 import { BookOpen, GraduationCap, Wrench } from "lucide-react";
-import curso1 from "../assets/curso-1.jpg";
-import curso2 from "../assets/curso-2.jpg";
-import curso3 from "../assets/curso-3.jpg";
-import curso4 from "../assets/curso-4.jpg";
+import informatica from "../assets/informatica.jpg";
+import administracao from "../assets/administracao.jpg";
+import comunicacao_visual from "../assets/comunicacao_visual.jpg";
+import eletromecanica from "../assets/mecanica.jpeg";
+import robotica from "../assets/robotica.jpeg";
+import informatica_basica from '../assets/informatica_basica.jpeg';
+import teens1 from "../assets/teens1.png";
+import teens2 from '../assets/teens2.png';
+import basico from '../assets/basico.jpeg';
+import basico_intemediario from '../assets/basico_intermediario.jpeg';
+import pre_intermediario from "../assets/pre-intermediario.png";
+import intermediario from '../assets/intermediario.png';
+import avancado from '../assets/avancado.png';
+import eletricista from '../assets/eletricista.png';
 
 /* Categorias de cursos usadas nos botões da seção (icone = componente Lucide) */
 export const categorias = [
@@ -11,63 +21,103 @@ export const categorias = [
   { id: "Qualificacoes", nome: "Qualificações", Icone: GraduationCap },
 ];
 
-
-/* Lista de cursos simulando um banco de dados local */
 export const cursos = [
   {
     id: 1,
     categoria: "Tecnicos",
-    nome: "Desenvolvimento de Sistemas",
+    nome: "Informática",
     descricao: "Aprenda lógica de programação, banco de dados e criação de aplicações web.",
-    imagem: curso1,
+    imagem: informatica,
   },
   {
     id: 2,
     categoria: "Tecnicos",
     nome: "Administração",
-    descricao: "Rotinas contábeis, tributos e análise de documentos financeiros.",
-    imagem: curso2,
+    descricao: "Gestão de pessoas, processos e organização de rotinas empresariais.",
+    imagem: administracao,
   },
   {
     id: 3,
     categoria: "Tecnicos",
-    nome: "Design Gráfico",
+    nome: "Comunicação Visual",
     descricao: "Identidade visual, edição de imagens e criação de peças digitais.",
-    imagem: curso3,
+    imagem: comunicacao_visual,
   },
   {
     id: 4,
-    categoria: "Tecnicos",
-    nome: "Administração",
-    descricao: "Gestão de pessoas, processos e organização de rotinas empresariais.",
-    imagem: curso4,
+    categoria: "Livres",
+    nome: "Informática Básica",
+    descricao: "Informática aplicada ao ambiente profissional, com Word, Excel, PowerPoint e ferramentas digitais.",
+    imagem: informatica_basica,
   },
   {
     id: 5,
     categoria: "Livres",
-    nome: "Informática Básica",
-    descricao: "Windows, internet, e-mail e pacote de escritório do zero.",
-    imagem: curso4,
+    nome: "Teens I",
+    descricao: "Aprenda inglês de forma prática e imersiva, desenvolvendo conversação, escrita, leitura e compreensão auditiva.",
+    imagem: teens1,
   },
   {
     id: 6,
     categoria: "Livres",
-    nome: "Inglês Instrumental",
-    descricao: "Vocabulário e leitura técnica para o mercado de trabalho.",
-    imagem: curso3,
+    nome: "Teens II",
+    descricao: "Aprofunde seus conhecimentos em inglês com foco em conversação, escrita, leitura e fluência.",
+    imagem: teens2,
   },
   {
     id: 7,
-    categoria: "Qualificacoes",
-    nome: "Excel Avançado",
-    descricao: "Fórmulas, tabelas dinâmicas e dashboards para relatórios.",
-    imagem: curso2,
+    categoria: "Livres",
+    nome: "Inglês Básico",
+    descricao: "Aprenda inglês em um formato intensivo, com foco em conversação, escrita, leitura e compreensão auditiva.",
+    imagem: basico,
   },
   {
     id: 8,
+    categoria: "Livres",
+    nome: "Inglês Básico ao Pré-Intermediario",
+    descricao: "Aprenda inglês do básico ao pré-intermediário, desenvolvendo conversação, escrita, leitura e compreensão auditiva.",
+    imagem: basico_intemediario,
+  },
+  {
+    id: 9,
+    categoria: "Livres",
+    nome: "Inglês Pré-Intermediário",
+    descricao: "Aprimore suas habilidades em inglês e prepare-se para avançar ao nível intermediário.",
+    imagem: pre_intermediario,
+  },
+  {
+    id: 10,
+    categoria: "Livres",
+    nome: "Inglês Intermediário",
+    descricao: "Desenvolva sua fluência em inglês, aperfeiçoando conversação, escrita, leitura e compreensão auditiva.",
+    imagem: intermediario,
+  },
+  {
+    id: 11,
+    categoria: "Livres",
+    nome: "Inglês Avançado",
+    descricao: "Aperfeiçoe sua fluência em inglês com foco em comunicação avançada, interpretação e conversação.",
+    imagem: avancado,
+  },
+  {
+    id: 12,
+    categoria: "Livres",
+    nome: "Eletricista Instalador",
+    descricao: "Aprenda instalações elétricas, manutenção de redes de baixa e média tensão e automação residencial.",
+    imagem: eletricista,
+  },
+  {
+    id: 13,
     categoria: "Qualificacoes",
-    nome: "Lógica de Programação",
-    descricao: "Primeiros passos em algoritmos com exercícios práticos.",
-    imagem: curso1,
+    nome: "Eletromecânica de Autos",
+    descricao: "Manutenção preventiva e corretiva de veículos, com foco em mecânica, elétrica e eletrônica automotiva.",
+    imagem: eletromecanica,
+  },
+  {
+    id: 14,
+    categoria: "Qualificacoes",
+    nome: "Automação Residencial e Robótica",
+    descricao: "Automação residencial, robótica e instalação de sistemas inteligentes para residências e indústrias.",
+    imagem: robotica,
   },
 ];

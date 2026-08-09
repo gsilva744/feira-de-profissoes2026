@@ -15,8 +15,8 @@ import Parceiros from "../components/Parceiros/Parceiros";
 import Footer from "../components/Footer/Footer";
 import Modal from "../components/Modal/Modal";
 import { useVisitantes } from "../utils/VisitantesContext";
-import predio from "../assets/predio.jpg";
-import "../css/formulario.css";
+import predio from "../assets/escola.png";
+import "../components/Formulario/formulario.css";
 
 const usuarioFixo = "admin";
 const senhaFixa = "123456";
@@ -45,6 +45,7 @@ function Home() {
       <Header onAbrirAreaRestrita={() => setModalAberto(true)} />
       <Hero />
       <Sobre />
+      <LivroDourado />
       <Atracoes />
 
       <Localizacao />
@@ -69,8 +70,6 @@ function Home() {
       </section>
 
       <Depoimentos />
-      <LivroDourado />
-      <Parceiros />
 
       <Footer />
 

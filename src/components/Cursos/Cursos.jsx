@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { categorias, cursos } from "../../data/cursos";
-import "../../css/cursos.css";
+import "./cursos.css";
 
 function Cursos() {
   const [categoriaSelecionada, setCategoriaSelecionada] = useState("Tecnicos");
@@ -28,7 +28,7 @@ function Cursos() {
                 onClick={() => setCategoriaSelecionada(categoria.id)}
               >
                 <span className="cursos-icone">
-                  <Icone size={26} strokeWidth={2.2} />
+                  <Icone size={40} strokeWidth={2.2} />
                 </span>
                 <span className="cursos-categoria-nome">{categoria.nome}</span>
                 <span className="cursos-categoria-total">{total} cursos</span>

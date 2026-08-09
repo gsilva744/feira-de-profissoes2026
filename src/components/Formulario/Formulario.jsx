@@ -2,7 +2,7 @@ import { useState } from "react";
 import { cursos } from "../../data/cursos";
 import { canaisDivulgacao, generos, vinculos } from "../../data/setores";
 import QRCodeVisitante from "../QRCode/QRCodeVisitante";
-import "../../css/formulario.css";
+import "./formulario.css";
 
 const camposVazios = {
   nome: "",
@@ -88,6 +88,7 @@ function Formulario({ onCadastrar, mostrarQrCode = true, titulo, descricao }) {
             value={campos.nome}
             onChange={alterarCampo}
             required
+            placeholder="Digite seu nome"
           />
         </div>
 
@@ -101,6 +102,7 @@ function Formulario({ onCadastrar, mostrarQrCode = true, titulo, descricao }) {
             value={campos.email}
             onChange={alterarCampo}
             required
+            placeholder="Digite seu email"
           />
         </div>
 

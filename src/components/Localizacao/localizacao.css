@@ -1,0 +1,45 @@
+.container-localizacao {
+  width: 70%;
+  margin: auto;
+}
+
+.localizacao-card {
+  background-color: var(--azul);
+  color: var(--branco);
+  border-radius: var(--raio);
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+  box-shadow: var(--sombra);
+}
+
+.localizacao-mapa {
+  width: 100%;
+  height: 300px;
+  border: 0;
+  border-radius: var(--raio);
+}
+
+.localizacao-info h3 {
+  color: var(--amarelo);
+  font-size: 30px;
+  margin-bottom: 16px;
+}
+
+.localizacao-info h4 {
+  font-size: 25px;
+  margin-top: 16px;
+}
+
+.localizacao-info p {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .localizacao-card {
+    grid-template-columns: 1fr;
+  }
+}

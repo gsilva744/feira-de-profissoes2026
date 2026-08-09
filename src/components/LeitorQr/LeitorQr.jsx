@@ -4,7 +4,7 @@ import { useVisitantes } from "../../utils/VisitantesContext";
 import { setores, nomeDoSetor } from "../../data/setores";
 import { abrirJanelaImpressao, compartilharCredencial } from "../../utils/impressao";
 import QRCodeVisitante from "../QRCode/QRCodeVisitante";
-import "../../css/leitor.css";
+import "./leitor.css";
 
 /*
  * Leitor de QR Code proprio (sem servicos externos).

@@ -1,0 +1,44 @@
+.sobre-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sobre-imagem {
+  width: 98%;
+  margin: auto;
+  height: 250px;
+  object-fit: cover;
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  transition: transform 0.3s;
+}
+
+.sobre-imagem:hover {
+  transform: scale(1.02);
+}
+
+.sobre-texto {
+  font-size: 20px;
+  color: var(--texto-claro);
+  text-align: justify;
+  line-height: 2;
+  
+}
+
+.sobre-acao {
+  text-align: center;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .sobre-linha {
+    grid-template-columns: 1fr;
+  }
+
+  .sobre-linha-invertida .sobre-imagem {
+    order: -1;
+  }
+}

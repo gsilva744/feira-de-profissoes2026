@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import QRCodeVisitante from "../QRCode/QRCodeVisitante";
 import { useVisitantes } from "../../utils/VisitantesContext";
 import { abrirJanelaImpressao } from "../../utils/impressao";
-import "../../css/crachas.css";
+import "./crachas.css";
 
 const LIMITE = 10;
 

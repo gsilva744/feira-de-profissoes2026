@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { depoimentos } from "../../data/depoimentos";
-import "../../css/depoimentos.css";
+import "./depoimentos.css";
 
 function Depoimentos() {
   const [indice, setIndice] = useState(0);
@@ -8,7 +8,7 @@ function Depoimentos() {
 
   return (
     <section className="secao" id="depoimentos">
-      <div className="container">
+      <div className="container-depoimentos">
         <h2 className="titulo-secao">Depoimentos</h2>
         <p className="depoimentos-intro">
           Quem passou pelo Instituto conta como a formação mudou a sua trajetória.

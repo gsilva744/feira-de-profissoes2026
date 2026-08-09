@@ -1,0 +1,122 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: #122447;
+  transition: padding 0.3s, box-shadow 0.3s;
+  padding: 14px 0;
+}
+
+.header-reduzido {
+  padding: 4px 0;
+  box-shadow: var(--sombra);
+}
+
+.header-conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: rgba(255, 255, 255, 0.253);
+  width: 80%;
+  margin: auto;
+  padding: 5px 10px;
+  border-radius: 40px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--branco);
+}
+
+.header-logo-marca {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  color: var(--azul);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.header-logo-texto {
+  font-size: 15px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.header-menu {
+  display: flex;
+  gap: 22px;
+}
+
+.header-menu button {
+  background: none;
+  color: var(--branco);
+  font-size: 16px;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.header-menu button:hover {
+  color: var(--amarelo);
+  border-color: var(--amarelo);
+}
+
+.header-botao-menu {
+  display: none;
+  background: none;
+  color: var(--branco);
+  font-size: 22px;
+}
+
+@media (max-width: 900px) {
+  .header-botao-menu {
+    display: block;
+  }
+
+  .header-menu {
+    display: none;
+  }
+
+  .header-menu-aberto {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--azul-escuro);
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .header-acao {
+    display: none;
+  }
+}
+
+.header-logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  background-color: var(--branco);
+  border-radius: 50%;
+  padding: 3px;
+}
+
+.header-logo-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-logo-texto strong {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+}

@@ -1,6 +1,6 @@
 import sobre1 from "../../assets/sobre-1.jpg";
 import sobre2 from "../../assets/sobre-2.jpg";
-import "../../css/sobre.css";
+import "./sobre.css";
 
 function Sobre() {
   function irParaInscricao() {

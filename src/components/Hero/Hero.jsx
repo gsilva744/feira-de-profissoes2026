@@ -1,4 +1,4 @@
-import "../../css/hero.css";
+import "./hero.css";
 
 function Hero() {
   function irParaSecao(id) {
@@ -10,7 +10,7 @@ function Hero() {
       <div className="container hero-conteudo">
         <span className="hero-selo">19 de setembro de 2026 · 09h às 18h</span>
         <h1>
-          Descubra sua profissão do futuro na <span>6ª Feira das Profissões</span>
+          Descubra sua profissão do futuro na <span>6ª Feira das Profissões!!</span>
         </h1>
         <p>
           Um dia inteiro para conhecer os cursos do Instituto, conversar com professores e alunos e

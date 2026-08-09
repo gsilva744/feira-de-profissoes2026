@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useVisitantes } from "../../utils/VisitantesContext";
 import { generos, setores, vinculos } from "../../data/setores";
-import "../../css/dashboard.css";
+import "./dashboard.css";
 
 function porcentagem(parte, total) {
   if (!total) return 0;

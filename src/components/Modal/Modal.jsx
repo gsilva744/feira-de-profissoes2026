@@ -1,4 +1,4 @@
-import "../../css/modal.css";
+import "./modal.css";
 
 /* Modal simples reutilizavel */
 function Modal({ titulo, onFechar, children }) {

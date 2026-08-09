@@ -1,7 +1,7 @@
 /* Variaveis e estilos globais do hotsite */
 
 :root {
-  --azul: #17356f;
+  --azul: #264C90;
   --azul-escuro: #0f2550;
   --azul-claro: #2a4d94;
   --amarelo: #f5c435;
@@ -62,7 +62,7 @@ a {
 
 .titulo-secao {
   color: var(--azul);
-  font-size: 30px;
+  font-size: 40px;
   text-align: center;
   margin-bottom: 32px;
 }
@@ -72,7 +72,7 @@ a {
   color: var(--branco);
   padding: 10px 26px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   transition: transform 0.2s, background-color 0.2s;
 }
@@ -87,7 +87,7 @@ a {
   color: var(--azul-escuro);
   padding: 10px 26px;
   border-radius: 999px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   transition: transform 0.2s, background-color 0.2s;
 }

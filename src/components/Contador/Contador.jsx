@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../../css/contador.css";
+import "./contador.css";
 
 const dataDaFeira = new Date("2026-09-19T09:00:00");
 const tempoZerado = { dias: 0, horas: 0, minutos: 0, segundos: 0 };

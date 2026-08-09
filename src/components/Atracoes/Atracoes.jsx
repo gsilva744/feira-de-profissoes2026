@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { andares, atracoesPorAndar } from "../../data/atracoes";
-import "../../css/atracoes.css";
+import "./atracoes.css";
 
 function Atracoes() {
   const [andarSelecionado, setAndarSelecionado] = useState("patio");

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { parceiros } from "../../data/parceiros";
-import "../../css/parceiros.css";
+import "./parceiros.css";
 
 const porPagina = 4;
 

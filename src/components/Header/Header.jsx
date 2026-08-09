@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import logoFeira from "../../assets/logoFeira.png.asset.json";
-import "../../css/header.css";
+import logoFeira from "../../assets/logoFrei.png";
+import "./header.css";
 
 const itensMenu = [
   { id: "inicio", nome: "Início" },
@@ -31,12 +31,13 @@ function Header({ onAbrirAreaRestrita }) {
 
   return (
     <header className={reduzido ? "header header-reduzido" : "header"}>
-      <div className="container header-conteudo">
+      <div className="header-conteudo">
         <a className="header-logo" href="#inicio">
-          <img src={logoFeira.url} alt="Logo da 6ª Feira das Profissões" />
+          <img src={logoFeira} alt="Logo da 6ª Feira das Profissões" />
           <span className="header-logo-texto">
             Instituto Social
-            <strong>Nossa Senhora de Fátima</strong>
+            <br />
+            Nossa Senhora de Fátima
           </span>
         </a>
 
